@@ -1,0 +1,4 @@
+name: BoxOfCats
+version: '1.0-SNAPSHOT'
+main: arnett.boxOfCats.BoxOfCats
+api-version: '1.21'
