@@ -1,7 +1,6 @@
 package arnett.fieldRadio;
 
-import arnett.fieldRadio.Items.Radio;
-import org.bukkit.Bukkit;
+import arnett.fieldRadio.Items.RadioListener;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,7 +9,7 @@ import java.util.logging.Logger;
 public final class FieldRadio extends JavaPlugin {
 
     public static Logger logger;
-    public static NamespacedKey key;
+    public static JavaPlugin singleton;
 
     //todo add multiple channels
     //todo add simple voice chat
@@ -19,12 +18,11 @@ public final class FieldRadio extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        //Sets Key for ease of use in other classes
-        key = new NamespacedKey(this, "field_radio");
+        singleton = this;
 
         CustomItemManager.registerRecipies();
         logger = getLogger();
-        getServer().getPluginManager().registerEvents(new EventListener(), this);
+        getServer().getPluginManager().registerEvents(new RadioListener(), this);
     }
 
     @Override
