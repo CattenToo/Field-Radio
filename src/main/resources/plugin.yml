@@ -1,4 +1,4 @@
-name: BoxOfCats
+name: FieldRadio
 version: '1.0-SNAPSHOT'
-main: arnett.boxOfCats.BoxOfCats
+main: arnett.fieldRadio.FieldRadio
 api-version: '1.21'
