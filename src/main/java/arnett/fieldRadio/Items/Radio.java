@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @SuppressWarnings("UnstableApiUsage")
 public class Radio {
@@ -113,18 +114,18 @@ public class Radio {
                 .anyMatch(Radio::isRadio);
     }
 
-    public static Optional<ItemStack>  getRadioFromPlayer(Player player) {
+    public static ItemStack[] getRadiosFromPlayer(Player player) {
         return Arrays.stream(player.getInventory().getContents())
                 .filter(Objects::nonNull)
                 .filter(Radio::isRadio)
-                .findFirst();
+                .toArray(ItemStack[]::new);
     }
 
-    public static Optional<ItemStack> getRadioFromPlayer(Player player, String frequency) {
+    public static ItemStack[] getRadiosFromPlayer(Player player, String frequency) {
         return Arrays.stream(player.getInventory().getContents())
                 .filter(Objects::nonNull)
                 .filter(Radio::isRadio)
-                .findFirst();
+                .toArray(ItemStack[]::new);
     }
 
     public static String getFrequency(ItemStack radio)

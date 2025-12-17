@@ -5,6 +5,7 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -38,21 +39,17 @@ public class RadioListener implements Listener {
             if(audience instanceof Player player)
             {
                 //check if they have radio
-                Optional<ItemStack> receivingRadio = Radio.getRadioFromPlayer(player);
+                ItemStack[] inventoryRadios = Radio.getRadiosFromPlayer(player);
 
-                if(receivingRadio.isEmpty())
-                    return true;
+                for (ItemStack receivingRadio : inventoryRadios)
+                {
+                    //frequency check
+                    if(Radio.matchingFrequencies(sendingRadio.get(), receivingRadio))
+                        return false;
+                }
 
-                FieldRadio.logger.info("has reciver");
-
-                //frequency check
-                if(!Radio.matchingFrequencies(sendingRadio.get(), receivingRadio.get()))
-                    return true;
-
-                FieldRadio.logger.info("right fq");
-
-                //meets conditions
-                return false;
+                //no match found
+                return true;
             }
 
             //not a player
@@ -67,7 +64,7 @@ public class RadioListener implements Listener {
         TextColor mainFqColor = TextColor.color(DyeColor.valueOf(mainFq).getColor().asRGB());
         TextColor subFqColor = TextColor.color(DyeColor.valueOf(subFq).getColor().asRGB());
 
-        FieldRadio.logger.info("Message Sent on Frequency <" + mainFq + "/" + subFq + "> by " + e.getPlayer().getName() + ": " + e.message());
+        FieldRadio.logger.info("Message Sent on Frequency <" + mainFq + "/" + subFq + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
 
         //build a new message
         e.renderer((source, sourceDisplayName, message, viewer) -> {
