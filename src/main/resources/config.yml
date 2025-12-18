@@ -1,0 +1,29 @@
+# enable the plugin
+enabled: true
+
+# Radio
+radio:
+  audio-filter:
+    enabled: true
+    LP-alpha: 0.8  # Lower = more muffled
+    HP-alpha: 0.85 # Higher = less bass
+    noise-floor: 75  # Constant hiss volume
+    crackle-chance: 3000 # 1 in 3000 chance per sample
+
+  grace-period: 200000000
+  recipe:
+    basic:
+      enabled: true
+
+      #MUST HAVE TWO "DYES" FOR FREQUENCY
+      shape:
+        - "O12"
+        - "IAI"
+        - "IRI"
+      ingredients:
+        O: "LIGHTNING_ROD"
+        I: "IRON_INGOT"
+        R: "REDSTONE"
+        A: "AMETHYST_SHARD"
+        1: "DYES"
+        2: "DYES"

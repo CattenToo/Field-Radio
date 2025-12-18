@@ -1,35 +1,93 @@
 package arnett.fieldRadio;
 
-import arnett.fieldRadio.Items.RadioListener;
-import org.bukkit.NamespacedKey;
+import arnett.fieldRadio.Commands.CommandManager;
+import arnett.fieldRadio.Items.CustomItemManager;
+import de.maxhenkel.voicechat.api.BukkitVoicechatService;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.ObjectInputFilter;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public final class FieldRadio extends JavaPlugin {
 
     public static Logger logger;
+    public static FileConfiguration config;
     public static JavaPlugin singleton;
+    public static ArrayList<String> avaliablePlugins = new ArrayList<>();
 
-    //todo add multiple channels
-    //todo add simple voice chat
-
+    //todo rework to use config file
 
     @Override
     public void onEnable() {
 
+        //setup fields for ease of use
         singleton = this;
-
-        CustomItemManager.registerRecipies();
         logger = getLogger();
-        getServer().getPluginManager().registerEvents(new RadioListener(), this);
+
+        //make sure config is present
+        saveDefaultConfig();
+
+        if(!getConfig().getBoolean(Config.enabled.path()))
+        {
+            return;
+        }
+
+        config = getConfig();
+
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            // This prints the exact name needed for your plugin.yml
+            avaliablePlugins.add(plugin.getName());
+        }
+
+        //sets up voicechat things if server has voicecehat
+        setupVoicechatFunctionality();
+
+
+        // registers listeners
+        CustomItemManager.registerItemEvents(this);
+
+        //registers recipes
+        CustomItemManager.registerRecipies();
+
+        //register commands
+        getCommand("fieldradio").setExecutor(new CommandManager(avaliablePlugins));
+    }
+
+    //sets up voice chat dependent things
+    public void setupVoicechatFunctionality()
+    {
+        // check voicechat
+        BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
+
+        getLogger().info("status: " + (service != null));
+        if(service != null)
+        {
+            //we have voice chat
+            service.registerPlugin(new FieldRadioVoiceChat());
+            getLogger().info("Using Simple Voice Chat");
+        }
+        else
+        {
+            getLogger().info("Running Without Simple Voice Chat");
+            return;
+        }
+
+        //simple voice is present from here down
+
+        //register events specific to voice chat
+        CustomItemManager.registerVoiceChatItemEvents(this);
     }
 
     @Override
-    public void onDisable() {
-
+    public void reloadConfig()
+    {
+        super.reloadConfig();
+        if(singleton == null)
+            singleton = this;
+        config = singleton.getConfig();
     }
-
-
-
 }

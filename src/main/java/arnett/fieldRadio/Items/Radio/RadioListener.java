@@ -1,12 +1,10 @@
-package arnett.fieldRadio.Items;
+package arnett.fieldRadio.Items.Radio;
 
 import arnett.fieldRadio.FieldRadio;
-import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,24 +34,23 @@ public class RadioListener implements Listener {
         //clears those without a radio (and non players)
         e.viewers().removeIf(audience -> {
             //only check for players
-            if(audience instanceof Player player)
-            {
-                //check if they have radio
-                ItemStack[] inventoryRadios = Radio.getRadiosFromPlayer(player);
-
-                for (ItemStack receivingRadio : inventoryRadios)
-                {
-                    //frequency check
-                    if(Radio.matchingFrequencies(sendingRadio.get(), receivingRadio))
-                        return false;
-                }
-
-                //no match found
+            if(!(audience instanceof Player player))
+                //not a player
                 return true;
+
+            //check if they have radio
+            ItemStack[] inventoryRadios = Radio.getRadiosFromPlayer(player);
+
+            for (ItemStack receivingRadio : inventoryRadios)
+            {
+                //frequency check
+                if(Radio.matchingFrequencies(sendingRadio.get(), receivingRadio))
+                    return false;
             }
 
-            //not a player
+            //no match found
             return true;
+
         });
 
 
@@ -61,8 +58,8 @@ public class RadioListener implements Listener {
         String mainFq = frequency.substring(0, frequency.indexOf('/'));
         String subFq = frequency.substring(frequency.indexOf('/') + 1);
 
-        TextColor mainFqColor = TextColor.color(DyeColor.valueOf(mainFq).getColor().asRGB());
-        TextColor subFqColor = TextColor.color(DyeColor.valueOf(subFq).getColor().asRGB());
+        TextColor mainFqColor = TextColor.color(Radio.getFrequencyColor(mainFq));
+        TextColor subFqColor = TextColor.color(Radio.getFrequencyColor(subFq));
 
         FieldRadio.logger.info("Message Sent on Frequency <" + mainFq + "/" + subFq + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
 
@@ -119,5 +116,4 @@ public class RadioListener implements Listener {
         //update result (tbh not sure if this is necessary)
         e.getInventory().setResult(result);
     }
-
 }
