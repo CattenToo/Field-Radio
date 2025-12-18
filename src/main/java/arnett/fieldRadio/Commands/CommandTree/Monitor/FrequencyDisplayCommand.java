@@ -7,6 +7,7 @@ import arnett.fieldRadio.Items.Radio.Radio;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -54,7 +55,14 @@ public class FrequencyDisplayCommand implements SubCommand {
                     //main frequency entry
                     idList.forEach((id) ->
                     {
-                        playerList.append(Bukkit.getPlayer(id).getName());
+                        try {
+                            playerList.append(Bukkit.getPlayer(id).getName());
+                        }
+                        catch (NullPointerException e)
+                        {
+                            //player not online so Can't get name (this is slower btw)
+                            playerList.append(Bukkit.getOfflinePlayer(id).getName());
+                        }
                         playerList.append(", ");
                     });
 
@@ -88,7 +96,14 @@ public class FrequencyDisplayCommand implements SubCommand {
             List<UUID> listeners = map.get(main + "/" + sub);
             listeners.forEach((id) ->
             {
-                playerList.append(Bukkit.getPlayer(id).getName());
+                try {
+                    playerList.append(Bukkit.getPlayer(id).getName());
+                }
+                catch (NullPointerException e)
+                {
+                    //player not online so Can't get name (this is slower btw)
+                    playerList.append(Bukkit.getOfflinePlayer(id).getName());
+                }
                 playerList.append(", ");
             });
 
@@ -105,7 +120,14 @@ public class FrequencyDisplayCommand implements SubCommand {
 
                 for(UUID id : players)
                 {
-                    playerList.append(Bukkit.getPlayer(id).getName());
+                    try {
+                        playerList.append(Bukkit.getPlayer(id).getName());
+                    }
+                    catch (NullPointerException e)
+                    {
+                        //player not online so Can't get name (this is slower btw)
+                        playerList.append(Bukkit.getOfflinePlayer(id).getName());
+                    }
                     playerList.append(", ");
                 }
 

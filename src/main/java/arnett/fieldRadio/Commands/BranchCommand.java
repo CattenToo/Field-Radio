@@ -62,7 +62,4 @@ public abstract class BranchCommand implements SubCommand {
 
         return List.of();
     }
-    // radio monitor config
-    // length 3
-    // level 2 -> args[2]
 }

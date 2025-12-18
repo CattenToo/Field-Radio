@@ -19,8 +19,6 @@ public final class FieldRadio extends JavaPlugin {
     public static JavaPlugin singleton;
     public static ArrayList<String> avaliablePlugins = new ArrayList<>();
 
-    //todo rework to use config file
-
     @Override
     public void onEnable() {
 

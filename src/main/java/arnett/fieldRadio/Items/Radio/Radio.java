@@ -58,7 +58,15 @@ public class Radio {
                     //just a basic material
                     else {
                         Material mat;
-                        mat = Material.matchMaterial(ingredients.getString(key));
+                        try{
+                            mat = Material.matchMaterial(ingredients.getString(key));
+                        }
+                        catch (Exception e)
+                        {
+                            //material not found or something went wrong
+                            FieldRadio.logger.info("Incorrectly registered Material For Radio basic recipe");
+                            mat = Material.AIR;
+                        }
                         if (mat != null) {
                             recipe.setIngredient(key.charAt(0), mat);
                         }

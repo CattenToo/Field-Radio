@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.checkerframework.common.initializedfields.qual.InitializedFields;
 
 public class RadioVoiceChatListener implements Listener {
 
@@ -45,6 +46,7 @@ public class RadioVoiceChatListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e)
     {
-        FieldRadioVoiceChat.refresh(e.getPlayer());
+        FieldRadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
+        FieldRadio.logger.info("Refresh Player");
     }
 }

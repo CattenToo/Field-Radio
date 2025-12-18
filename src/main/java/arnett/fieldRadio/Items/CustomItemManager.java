@@ -24,7 +24,6 @@ public class CustomItemManager {
     {
         //radio
         plugin.getServer().getPluginManager().registerEvents(new RadioVoiceChatListener(), plugin);
-
     }
 
     public static void registerRecipies()

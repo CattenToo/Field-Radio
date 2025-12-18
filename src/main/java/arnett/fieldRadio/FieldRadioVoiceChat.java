@@ -196,6 +196,19 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
             frequencyListeners.remove(frequency);
     }
 
+    public static void removeFromFrequency(UUID id)
+    {
+        frequencyListeners.entrySet().removeIf(((s) -> {
+            s.getValue().removeIf((e) ->
+                e.equals(id)
+            );
+
+            if (s.getValue().isEmpty())
+                return true;
+            return false;
+        }));
+    }
+
     //cleans frequencies
     public static void clearFrequencies()
     {

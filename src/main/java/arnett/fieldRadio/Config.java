@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.List;
 
 //enum for autocorrect when writing code
+// bro tbh this system kinda sucks
 public enum Config {
     // Top level
     enabled("enabled"),
