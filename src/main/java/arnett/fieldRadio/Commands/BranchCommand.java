@@ -42,9 +42,10 @@ public abstract class BranchCommand implements SubCommand {
     //provides suggestions when writing args
     public List<String> getSubcommandArguments(Player player, String[] args, int level)
     {
-        //display this node's sub commands
+        //if the length of the args is equal to the level, we have found the current end node
         if(args.length == level)
         {
+            //display this node's sub commands
             ArrayList<String> commandNames = new ArrayList<>();
             subCommands.forEach((command, plugin) -> {
                 commandNames.add(command.getName());

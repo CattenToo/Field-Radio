@@ -3,6 +3,7 @@ package arnett.fieldRadio.Commands.CommandTree.Manage;
 import arnett.fieldRadio.Commands.SubCommand;
 import arnett.fieldRadio.FieldRadioVoiceChat;
 import arnett.fieldRadio.Items.Radio.Radio;
+import arnett.fieldRadio.Items.Radio.RadioVoiceChat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,18 +25,18 @@ public class RefreshConnectionsCommand implements SubCommand {
                 //refresh for one person
                 Player target = Bukkit.getPlayer(args[level]);
 
-                FieldRadioVoiceChat.refresh(target);
+                RadioVoiceChat.refresh(target);
 
             }
 
             //default assumes no arguments
             default -> {
-                FieldRadioVoiceChat.clearFrequencies();
+                RadioVoiceChat.clearFrequencies();
 
                 //refresh for everyone
                 for (Player target : Bukkit.getOnlinePlayers())
                 {
-                    FieldRadioVoiceChat.refresh(target);
+                    RadioVoiceChat.refresh(target);
                 }
             }
         }

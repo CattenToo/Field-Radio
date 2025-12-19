@@ -20,7 +20,6 @@ public interface SubCommand {
     //code that gets executed (i mean it's in the name)
     default boolean execute(Player player, String[] args, int level)
     {
-        FieldRadio.logger.info("RUNNING COMMAND SUB");
         if(!canUse(player))
         {
             player.sendMessage(Component.text("You do not have permission to run this command!"));

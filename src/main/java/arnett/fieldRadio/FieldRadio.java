@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.ObjectInputFilter;
 import java.util.ArrayList;
@@ -24,17 +25,18 @@ public final class FieldRadio extends JavaPlugin {
 
         //setup fields for ease of use
         singleton = this;
+        //Config is a custom class for ease of use which inherits from class of getConfig()
+        config = getConfig();
+
         logger = getLogger();
 
-        //make sure config is present
-        saveDefaultConfig();
-
-        if(!getConfig().getBoolean(Config.enabled.path()))
+        if(!Config.enabled)
         {
             return;
         }
 
-        config = getConfig();
+        //make sure config is present
+        saveDefaultConfig();
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             // This prints the exact name needed for your plugin.yml
@@ -86,6 +88,6 @@ public final class FieldRadio extends JavaPlugin {
         super.reloadConfig();
         if(singleton == null)
             singleton = this;
-        config = singleton.getConfig();
+        config = getConfig();
     }
 }

@@ -4,6 +4,7 @@ import arnett.fieldRadio.Commands.SubCommand;
 import arnett.fieldRadio.FieldRadio;
 import arnett.fieldRadio.FieldRadioVoiceChat;
 import arnett.fieldRadio.Items.Radio.Radio;
+import arnett.fieldRadio.Items.Radio.RadioVoiceChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -13,6 +14,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+
+// todo THIS COMMAND WILL BE REWORKED LATER
 
 @SuppressWarnings("UnstableApiUsage")
 public class FrequencyDisplayCommand implements SubCommand {
@@ -37,15 +40,16 @@ public class FrequencyDisplayCommand implements SubCommand {
 
         SubCommand.super.execute(player, args, level);
 
-        FieldRadio.logger.info("RUNNING COMMAND");
-
-        Map<String, ArrayList<UUID>> map = FieldRadioVoiceChat.getFrequencys();
+        Map<String, ArrayList<UUID>> map = RadioVoiceChat.getFrequencys();
 
         if(args.length == level + 1) {
+
             StringBuilder playerList = new StringBuilder();
 
             //sent with main frequency
             String mainf = args[level];
+
+            // todo REWORK THIS
 
             //fill player list
             map.forEach((frequency, idList) ->
@@ -74,17 +78,30 @@ public class FrequencyDisplayCommand implements SubCommand {
                     player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
                             .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
                             .append(Component.text(playerList.toString())));
+
+                    //clear list for next use
+                    playerList.setLength(0);
                 }
             });
 
-            //no one's got a radio
-            if(map.isEmpty())
+            boolean presentListener = false;
+
+            //this part is just to display a message if nothing else was shown
+            //no one's got a radio of main frequency
+            for(String s : map.keySet())
             {
-                player.sendMessage(Component.text("No Active Listeners").decorate(TextDecoration.BOLD));
+                if(s.contains(mainf))
+                {
+                    presentListener = true;
+                    break;
+                }
             }
+
+            if(!presentListener)
+                player.sendMessage(Component.text("No Active Listeners").decorate(TextDecoration.BOLD));
         }
 
-        if (args.length == level + 2){
+        else if (args.length == level + 2){
             StringBuilder playerList = new StringBuilder();
 
             //sent with main frequency
@@ -94,29 +111,34 @@ public class FrequencyDisplayCommand implements SubCommand {
 
             //fill player list
             List<UUID> listeners = map.get(main + "/" + sub);
-            listeners.forEach((id) ->
-            {
-                try {
-                    playerList.append(Bukkit.getPlayer(id).getName());
-                }
-                catch (NullPointerException e)
-                {
-                    //player not online so Can't get name (this is slower btw)
-                    playerList.append(Bukkit.getOfflinePlayer(id).getName());
-                }
-                playerList.append(", ");
-            });
 
-            //display
-            player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
-                    .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
-                    .append(Component.text(playerList.toString())));
+            if(listeners != null)
+                listeners.forEach((id) ->
+                {
+                    try {
+                        playerList.append(Bukkit.getPlayer(id).getName());
+                    }
+                    catch (NullPointerException e)
+                    {
+                        //player not online so Can't get name (this is slower btw)
+                        playerList.append(Bukkit.getOfflinePlayer(id).getName());
+                    }
+                    playerList.append(", ");
+                });
+
+            if(!playerList.isEmpty())
+                //display
+                player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
+                        .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
+                        .append(Component.text(playerList.toString())));
+            else
+                player.sendMessage(Component.text("No Active Listeners").decorate(TextDecoration.BOLD));
         }
 
         //default assumes no arguments
         else  {
+            StringBuilder playerList = new StringBuilder();
             map.forEach((frequency, players) -> {
-                StringBuilder playerList = new StringBuilder();
 
                 for(UUID id : players)
                 {
@@ -139,6 +161,8 @@ public class FrequencyDisplayCommand implements SubCommand {
                 player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
                         .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
                         .append(Component.text(playerList.toString())));
+
+                playerList.setLength(0);
             });
 
             //no one's got a radio

@@ -4,6 +4,7 @@ import arnett.fieldRadio.FieldRadio;
 import arnett.fieldRadio.FieldRadioVoiceChat;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,34 +20,59 @@ public class RadioVoiceChatListener implements Listener {
     @EventHandler
     public void onInventoryChange(PlayerInventorySlotChangeEvent e)
     {
+        // so fun fact, when opening a GUI minecraft refreshes the inventory which means
+        // this is getting set off, but it's not with the same new and old item because
+        // when it is refreshed the old item is AIR and the new item is the actual item
+        // which causes an issue because WHY! (syncing that's why)
+
+        // only when a radio is involved and the same radio isn't changed by itself.
         if(Radio.isRadio(e.getNewItemStack()))
         {
+            if(e.getOldItemStack().getType().equals(Material.AIR))
+            {
+                // possible inventory refresh scenario (like opening a chest)
+                // or item added to empty slot
+                // how to tell the difference? NOT SCIENTIFICALLY POSSIBLE
+                // so screw it, one tick later we'll just refresh the player
+                // ONLY IF they already are connected to the frequency
+
+                String frequency = Radio.getFrequency(e.getNewItemStack());
+
+                if(RadioVoiceChat.isOnFrequency(frequency, e.getPlayer()))
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(FieldRadio.singleton, () -> {
+                        RadioVoiceChat.refresh(frequency, e.getPlayer());
+                    }, 1);
+            }
+
             FieldRadio.logger.info("Picked Up Radio <" + Radio.getFrequency(e.getNewItemStack()) + "> by " + e.getPlayer().getName());
 
-            //player added radio to inventory
+            //radio added to inventory
             //set player to listen to frequency
-            FieldRadioVoiceChat.addToFrequency(Radio.getFrequency(e.getNewItemStack()), e.getPlayer().getUniqueId());
+            RadioVoiceChat.addToFrequency(Radio.getFrequency(e.getNewItemStack()), e.getPlayer().getUniqueId());
         }
         if(Radio.isRadio(e.getOldItemStack()))
         {
+
             FieldRadio.logger.info("Removed Radio <" + Radio.getFrequency(e.getOldItemStack()) + "> by " + e.getPlayer().getName());
 
-            //player removed radio from inventory
+            //radio removed from inventory
             //remove player from listen to frequency
-            FieldRadioVoiceChat.removeFromFrequency(Radio.getFrequency(e.getOldItemStack()), e.getPlayer().getUniqueId());
+            RadioVoiceChat.removeFromFrequency(Radio.getFrequency(e.getOldItemStack()), e.getPlayer().getUniqueId());
         }
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e)
     {
-        FieldRadioVoiceChat.removeFromGrace(e.getPlayer().getUniqueId());
+        RadioVoiceChat.removeFromGrace(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e)
     {
-        FieldRadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
-        FieldRadio.logger.info("Refresh Player");
+        // so when a player joins their inventory is refreshed by the server which means
+        // the inventory slot change event will be called, so we just have to remove
+        // all their existing entries if any (which would be the case if there is a serer stop)
+        RadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
     }
 }

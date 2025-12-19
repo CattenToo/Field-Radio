@@ -39,12 +39,12 @@ public class Radio {
             ShapedRecipe recipe = new ShapedRecipe(radioIdentifierKey, getRadio());
 
             //get shape of recipe from config
-            recipe.shape(FieldRadio.config.getStringList(Config.radio_recipe_basic_shape.path()).toArray(String[]::new));
+            recipe.shape(Config.radio_recipe_basic_shape.toArray(String[]::new));
 
             //allows for all dye types to be used in a slot
             RecipeChoice.MaterialChoice dyes = new RecipeChoice.MaterialChoice(MaterialTags.DYES);
 
-            ConfigurationSection ingredients = FieldRadio.config.getConfigurationSection(Config.radio_recipe_basic_ingredients.path());
+            ConfigurationSection ingredients = Config.radio_recipe_basic_ingredients;
 
             //defines the ingredients (the letters in the shape)
             if (ingredients != null) {
@@ -107,6 +107,19 @@ public class Radio {
         radio.editPersistentDataContainer(pdc -> {
             pdc.set(radioIdentifierKey, PersistentDataType.STRING, "radio");
         });
+
+        return radio;
+    }
+
+    public static ItemStack getRadio(String frequency)
+    {
+        ItemStack radio = Radio.getRadio();
+
+        radio.editPersistentDataContainer(pdc -> {
+            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency);
+        });
+
+        radio.lore(List.of(Component.text(frequency)));
 
         return radio;
     }

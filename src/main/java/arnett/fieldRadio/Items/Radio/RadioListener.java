@@ -1,11 +1,14 @@
 package arnett.fieldRadio.Items.Radio;
 
+import arnett.fieldRadio.Config;
 import arnett.fieldRadio.FieldRadio;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.block.Crafter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -79,8 +82,42 @@ public class RadioListener implements Listener {
     @EventHandler
     public void onRadioCraftered(CrafterCraftEvent e)
     {
-        if (Radio.isRadio(e.getResult()))
-            e.setCancelled(true);
+        if (!Radio.isRadio(e.getRecipe().getResult()))
+            //not radio recipe so skip
+            return;
+
+        ItemStack result = e.getResult();
+
+        //returns what is put in the crafting interface
+        ItemStack[] mtx = ((Crafter)e.getBlock().getState()).getInventory().getContents();
+
+        ItemStack dye1 = ItemStack.of(Material.GRAY_DYE);
+        ItemStack dye2 = ItemStack.of(Material.GRAY_DYE);
+
+        //get position of dyes
+        //yes this is bad but It'll get reworked with some other stuff later
+        // todo REWORK
+        for(int i = 0; i < Config.radio_recipe_basic_shape.size(); i++)
+        {
+            if(Config.radio_recipe_basic_shape.get(i).contains("1"))
+                dye1 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('1')];
+            if(Config.radio_recipe_basic_shape.get(i).contains("2"))
+                dye2 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('2')];
+        }
+
+        String frequency = dye1.getType().name().replace("_DYE", "");
+        String subfrequency = dye2.getType().name().replace("_DYE", "");
+
+        result.editPersistentDataContainer(pdc -> {
+            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency + "/" + subfrequency);
+        });
+
+        result.lore(List.of(Component.text(frequency + "/" + subfrequency)));
+
+        FieldRadio.logger.info("Radio Prepared: " + frequency + "/" + subfrequency);
+
+        //update result (tbh not sure if this is necessary)
+        e.setResult(result);
     }
 
     @EventHandler
@@ -99,8 +136,20 @@ public class RadioListener implements Listener {
         //returns what is put in the crafting interface
         ItemStack[] mtx = e.getInventory().getMatrix();
 
-        ItemStack dye1 = mtx[1];
-        ItemStack dye2 = mtx[2];
+        ItemStack dye1 = ItemStack.of(Material.GRAY_DYE);
+        ItemStack dye2 = ItemStack.of(Material.GRAY_DYE);
+
+        //get position of dyes
+        //yes this is bad but It'll get reworked with some other stuff later
+        // todo REWORK
+        for(int i = 0; i < Config.radio_recipe_basic_shape.size(); i++)
+        {
+            if(Config.radio_recipe_basic_shape.get(i).contains("1"))
+                dye1 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('1')];
+            if(Config.radio_recipe_basic_shape.get(i).contains("2"))
+                dye2 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('2')];
+        }
+
 
         String frequency = dye1.getType().name().replace("_DYE", "");
         String subfrequency = dye2.getType().name().replace("_DYE", "");

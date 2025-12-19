@@ -8,6 +8,6 @@ commands:
     description: Main command
     aliases: [fieldradio, radio]
     permission: fieldradio.use
-    usage: "use /radio <monitor|manage> ..."
+    usage: "Incorrect Usage (/radio <subcommand> ...)"
 
 softdepend: [voicechat]

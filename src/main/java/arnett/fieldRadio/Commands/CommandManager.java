@@ -1,5 +1,7 @@
 package arnett.fieldRadio.Commands;
 
+import arnett.fieldRadio.Commands.CommandTree.Give.GiveFieldRadioCommang;
+import arnett.fieldRadio.Commands.CommandTree.GiveBranch;
 import arnett.fieldRadio.Commands.CommandTree.Manage.Config.SetConfigValueCommand;
 import arnett.fieldRadio.Commands.CommandTree.Manage.ConfigBranch;
 import arnett.fieldRadio.Commands.CommandTree.Manage.RefreshConnectionsCommand;
@@ -37,6 +39,9 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             switch(s)
             {
                 case "none" -> {
+                    subCommands.add(new GiveBranch(new HashMap<>(Map.of(
+                            new GiveFieldRadioCommang(), "none"
+                    ))));
                     subCommands.add(new MonitorBranch(new HashMap<>(Map.of(
                             new FrequencyDisplayCommand(), "voicechat"
                     ))));
