@@ -7,13 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.C;
 
-import java.io.ObjectInputFilter;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public final class FieldRadio extends JavaPlugin {
+public final class Radio extends JavaPlugin {
 
     public static Logger logger;
     public static FileConfiguration config;
@@ -69,7 +67,7 @@ public final class FieldRadio extends JavaPlugin {
         if(service != null)
         {
             //we have voice chat
-            service.registerPlugin(new FieldRadioVoiceChat());
+            service.registerPlugin(new RadioVoiceChat());
             getLogger().info("Using Simple Voice Chat");
         }
         else

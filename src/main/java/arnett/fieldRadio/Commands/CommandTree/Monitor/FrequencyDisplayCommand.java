@@ -1,14 +1,11 @@
 package arnett.fieldRadio.Commands.CommandTree.Monitor;
 
 import arnett.fieldRadio.Commands.SubCommand;
-import arnett.fieldRadio.FieldRadio;
-import arnett.fieldRadio.FieldRadioVoiceChat;
-import arnett.fieldRadio.Items.Radio.Radio;
-import arnett.fieldRadio.Items.Radio.RadioVoiceChat;
+import arnett.fieldRadio.Items.Radio.FieldRadio;
+import arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -40,7 +37,7 @@ public class FrequencyDisplayCommand implements SubCommand {
 
         SubCommand.super.execute(player, args, level);
 
-        Map<String, ArrayList<UUID>> map = RadioVoiceChat.getFrequencys();
+        Map<String, ArrayList<UUID>> map = FieldRadioVoiceChat.getFrequencys();
 
         if(args.length == level + 1) {
 
@@ -75,8 +72,8 @@ public class FrequencyDisplayCommand implements SubCommand {
                     String sub = frequency.substring(frequency.indexOf('/') + 1);
 
                     //display
-                    player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
-                            .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
+                    player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(FieldRadio.getFrequencyColor(main)))
+                            .append(Component.text(sub + "> ").color(TextColor.color(FieldRadio.getFrequencyColor(sub))))
                             .append(Component.text(playerList.toString())));
 
                     //clear list for next use
@@ -128,8 +125,8 @@ public class FrequencyDisplayCommand implements SubCommand {
 
             if(!playerList.isEmpty())
                 //display
-                player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
-                        .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
+                player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(FieldRadio.getFrequencyColor(main)))
+                        .append(Component.text(sub + "> ").color(TextColor.color(FieldRadio.getFrequencyColor(sub))))
                         .append(Component.text(playerList.toString())));
             else
                 player.sendMessage(Component.text("No Active Listeners").decorate(TextDecoration.BOLD));
@@ -158,8 +155,8 @@ public class FrequencyDisplayCommand implements SubCommand {
                 String sub = frequency.substring(frequency.indexOf('/') + 1);
 
                 //display
-                player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(Radio.getFrequencyColor(main)))
-                        .append(Component.text(sub + "> ").color(TextColor.color(Radio.getFrequencyColor(sub))))
+                player.sendMessage(Component.text("<" + main + "/").color(TextColor.color(FieldRadio.getFrequencyColor(main)))
+                        .append(Component.text(sub + "> ").color(TextColor.color(FieldRadio.getFrequencyColor(sub))))
                         .append(Component.text(playerList.toString())));
 
                 playerList.setLength(0);

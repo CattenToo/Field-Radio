@@ -1,17 +1,12 @@
 package arnett.fieldRadio.Items.Radio;
 
-import arnett.fieldRadio.Config;
-import arnett.fieldRadio.FieldRadio;
-import arnett.fieldRadio.FieldRadioVoiceChat;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
 //mostly just a library class for functions relating to the radio through voicechat
-public class RadioVoiceChat {
+public class FieldRadioVoiceChat {
 
     //stores all players that are listening to which frequency
     public static HashMap<String, ArrayList<UUID>> frequencyListeners = new HashMap<>();
@@ -123,21 +118,21 @@ public class RadioVoiceChat {
 
         clearFrequency(target);
 
-        ItemStack[] radios = Radio.getRadiosFromPlayer(target);
+        ItemStack[] radios = FieldRadio.getRadiosFromPlayer(target);
 
         for(ItemStack radio : radios)
-            addToFrequency(Radio.getFrequency(radio), target.getUniqueId());
+            addToFrequency(FieldRadio.getFrequency(radio), target.getUniqueId());
     }
 
     public static void refresh(String frequency, Player target){
 
         clearFrequency(frequency, target);
 
-        ItemStack[] radios = Radio.getRadiosFromPlayer(target);
+        ItemStack[] radios = FieldRadio.getRadiosFromPlayer(target);
 
         for(ItemStack radio : radios)
-            if(Radio.getFrequency(radio).equalsIgnoreCase(frequency))
-                addToFrequency(Radio.getFrequency(radio), target.getUniqueId());
+            if(FieldRadio.getFrequency(radio).equalsIgnoreCase(frequency))
+                addToFrequency(FieldRadio.getFrequency(radio), target.getUniqueId());
     }
 
 }

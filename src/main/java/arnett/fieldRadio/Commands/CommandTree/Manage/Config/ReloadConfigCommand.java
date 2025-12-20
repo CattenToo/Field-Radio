@@ -1,11 +1,8 @@
 package arnett.fieldRadio.Commands.CommandTree.Manage.Config;
 
 import arnett.fieldRadio.Commands.SubCommand;
-import arnett.fieldRadio.FieldRadio;
-import net.kyori.adventure.text.Component;
-import org.bukkit.command.CommandSender;
+import arnett.fieldRadio.Radio;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ public class ReloadConfigCommand implements SubCommand {
 
         SubCommand.super.execute(player, args, level);
 
-        FieldRadio.singleton.reloadConfig();
+        Radio.singleton.reloadConfig();
         return true;
     }
 

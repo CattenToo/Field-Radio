@@ -1,6 +1,5 @@
 package arnett.fieldRadio.Commands;
 
-import arnett.fieldRadio.FieldRadio;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 

@@ -1,33 +1,28 @@
 package arnett.fieldRadio.Items.Radio;
 
 import arnett.fieldRadio.Config;
-import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.Radio;
 import com.destroystokyo.paper.MaterialTags;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
-import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataType;
-import org.w3c.dom.css.RGBColor;
 
 import java.util.*;
 
 @SuppressWarnings("UnstableApiUsage")
-public class Radio {
+public class FieldRadio {
 
-    public static final NamespacedKey radioIdentifierKey = new NamespacedKey(FieldRadio.singleton, "radio");
-    public static final NamespacedKey radioFrequencyKey= new NamespacedKey(FieldRadio.singleton, "frequency");
+    public static final NamespacedKey radioIdentifierKey = new NamespacedKey(Radio.singleton, "radio");
+    public static final NamespacedKey radioFrequencyKey= new NamespacedKey(Radio.singleton, "frequency");
     public static final Material RadioMaterial = Material.MUSIC_DISC_13;
 
     public static ArrayList<Recipe> getRecipes()
@@ -58,7 +53,7 @@ public class Radio {
                     catch (Exception e)
                     {
                         //material not found or something went wrong
-                        FieldRadio.logger.info("Incorrectly registered Material For Radio basic recipe");
+                        Radio.logger.info("Incorrectly registered Material For Radio basic recipe");
                         mat = Material.AIR;
                     }
                     if (mat != null) {
@@ -73,11 +68,11 @@ public class Radio {
                 try
                 {
                     recipe.setIngredient((char)( i + '0'), dyes);
-                    FieldRadio.logger.info("Added Dye for " + i);
+                    Radio.logger.info("Added Dye for " + i);
                 }
                 catch (Exception e)
                 {
-                    FieldRadio.logger.info("stopped at " + i);
+                    Radio.logger.info("stopped at " + i);
                     //frequency not in recipe so exit
                     break;
                 }
@@ -122,10 +117,10 @@ public class Radio {
 
     public static ItemStack getRadio(String frequency)
     {
-        ItemStack radio = Radio.getRadio();
+        ItemStack radio = FieldRadio.getRadio();
 
         radio.editPersistentDataContainer(pdc -> {
-            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency);
+            pdc.set(FieldRadio.radioFrequencyKey, PersistentDataType.STRING, frequency);
         });
 
         radio.lore(List.of(Component.text(frequency)));
@@ -161,20 +156,20 @@ public class Radio {
     public static boolean hasRadio(Player player) {
         return Arrays.stream(player.getInventory().getContents())
                 .filter(Objects::nonNull)
-                .anyMatch(Radio::isRadio);
+                .anyMatch(FieldRadio::isRadio);
     }
 
     public static ItemStack[] getRadiosFromPlayer(Player player) {
         return Arrays.stream(player.getInventory().getContents())
                 .filter(Objects::nonNull)
-                .filter(Radio::isRadio)
+                .filter(FieldRadio::isRadio)
                 .toArray(ItemStack[]::new);
     }
 
     public static ItemStack[] getRadiosFromPlayer(Player player, String frequency) {
         return Arrays.stream(player.getInventory().getContents())
                 .filter(Objects::nonNull)
-                .filter(Radio::isRadio)
+                .filter(FieldRadio::isRadio)
                 .toArray(ItemStack[]::new);
     }
 

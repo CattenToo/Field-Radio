@@ -1,8 +1,7 @@
 package arnett.fieldRadio;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
-import org.bukkit.configuration.file.FileConfiguration;
+
 import java.util.List;
 
 //yeah, this system is much better
@@ -33,23 +32,23 @@ public class Config {
     public static void refresh()
     {
          // Top level
-         enabled = FieldRadio.config.getBoolean("enabled");
+         enabled = Radio.config.getBoolean("enabled");
 
-         frequencyRepresentationDyes = FieldRadio.config.getConfigurationSection("frequency-representation.dyes");
-         frequencySplitString = FieldRadio.config.getString("frequency-representation.separating-string");
+         frequencyRepresentationDyes = Radio.config.getConfigurationSection("frequency-representation.dyes");
+         frequencySplitString = Radio.config.getString("frequency-representation.separating-string");
          // Field radio Audio Filter
-         radio_audioFilter_enabled = FieldRadio.config.getBoolean("radio.audio-filter.enabled");
-         radio_audioFilter_LPAlpha = FieldRadio.config.getDouble("radio.audio-filter.LP-alpha");
-         radio_audioFilter_HPAlpha = FieldRadio.config.getDouble("radio.audio-filter.HP-alpha");
-         radio_audioFilter_noiseFloor = FieldRadio.config.getInt("radio.audio-filter.noise-floor");
-         radio_audioFilter_crackleChance = FieldRadio.config.getInt("radio.audio-filter.crackle-chance");
+         radio_audioFilter_enabled = Radio.config.getBoolean("fieldradio.audio-filter.enabled");
+         radio_audioFilter_LPAlpha = Radio.config.getDouble("fieldradio.audio-filter.LP-alpha");
+         radio_audioFilter_HPAlpha = Radio.config.getDouble("fieldradio.audio-filter.HP-alpha");
+         radio_audioFilter_noiseFloor = Radio.config.getInt("fieldradio.audio-filter.noise-floor");
+         radio_audioFilter_crackleChance = Radio.config.getInt("fieldradio.audio-filter.crackle-chance");
 
          // Radio Grace perood
-         radio_gracePeriod = FieldRadio.config.getLong("radio.grace-period");
+         radio_gracePeriod = Radio.config.getLong("fieldradio.grace-period");
 
          // Radio Recipe
-         radio_recipe_basic_enabled = FieldRadio.config.getBoolean("radio.recipe.basic.enabled");
-         radio_recipe_basic_shape = FieldRadio.config.getStringList("radio.recipe.basic.shape");
-         radio_recipe_basic_ingredients = FieldRadio.config.getConfigurationSection("radio.recipe.basic.ingredients");
+         radio_recipe_basic_enabled = Radio.config.getBoolean("fieldradio.recipe.basic.enabled");
+         radio_recipe_basic_shape = Radio.config.getStringList("fieldradio.recipe.basic.shape");
+         radio_recipe_basic_ingredients = Radio.config.getConfigurationSection("fieldradio.recipe.basic.ingredients");
     }
 }

@@ -1,26 +1,19 @@
 package arnett.fieldRadio;
 
-import arnett.fieldRadio.Items.Radio.Radio;
-import arnett.fieldRadio.Items.Radio.RadioVoiceChat;
+import arnett.fieldRadio.Items.Radio.FieldRadio;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
-import de.maxhenkel.voicechat.api.audiochannel.StaticAudioChannel;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
-import de.maxhenkel.voicechat.api.packets.Packet;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.logging.Logger;
 
-public class FieldRadioVoiceChat implements VoicechatPlugin {
+public class RadioVoiceChat implements VoicechatPlugin {
 
     VoicechatApi api;
     OpusDecoder decoder;
@@ -60,38 +53,38 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
             return;
 
         //make sure player is actively holding a radio
-        if(!Radio.isHoldingRadio(player))
+        if(!FieldRadio.isHoldingRadio(player))
             return;
 
         //grace period so voice doesn't cut off at end
-        if(!player.hasActiveItem() && !RadioVoiceChat.playersInGracePeroid.containsKey(player.getUniqueId()))
+        if(!player.hasActiveItem() && !arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.playersInGracePeroid.containsKey(player.getUniqueId()))
         {
                 return;
         }
         else if (player.hasActiveItem())
         {
             //update Grace period
-            RadioVoiceChat.playersInGracePeroid.put(player.getUniqueId(), System.nanoTime() + Config.radio_gracePeriod);
+            arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.playersInGracePeroid.put(player.getUniqueId(), System.nanoTime() + Config.radio_gracePeriod);
         }
         else
         {
             //they aren't using the radio and are on grace
-            if(RadioVoiceChat.playersInGracePeroid.get(player.getUniqueId()) < System.nanoTime())
+            if(arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.playersInGracePeroid.get(player.getUniqueId()) < System.nanoTime())
             {
                 //remove player from grace and stop packet
-                RadioVoiceChat.removeFromGrace(player.getUniqueId());
+                arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.removeFromGrace(player.getUniqueId());
                 return;
             }
         }
 
         //send packets to others listening to frequency
-        String frequency = Radio.getFrequency(Radio.getHeldRadio(player).get());
+        String frequency = FieldRadio.getFrequency(FieldRadio.getHeldRadio(player).get());
 
         //gets voice chat api for connections
         VoicechatServerApi serverVC = e.getVoicechat();
 
         // worst case scenario is someone is filling up a frequency with like 41 radios
-        Set<UUID> processed = new HashSet<>((int)Math.sqrt(RadioVoiceChat.frequencyListeners.get(frequency).size()));
+        Set<UUID> processed = new HashSet<>((int)Math.sqrt(arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.frequencyListeners.get(frequency).size()));
 
         //so player doesn't hear themselves
         processed.add(player.getUniqueId());
@@ -108,7 +101,7 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
         int NOISE_FLOOR = Config.radio_audioFilter_noiseFloor;  // Constant hiss volume
         int CRACKLE_CHANCE = Config.radio_audioFilter_crackleChance; // 1 in 2000 samples
 
-        for(UUID id : RadioVoiceChat.frequencyListeners.get(frequency))
+        for(UUID id : arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.frequencyListeners.get(frequency))
         {
             //skip if already added to set (they've already been sent the packet)
             if(!processed.add(id))
@@ -131,7 +124,7 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
                 short[] decodedData = decoder.decode(audioData);
 
 
-                FieldRadio.logger.info("CRACKLE_CHANCE " + CRACKLE_CHANCE);
+                Radio.logger.info("CRACKLE_CHANCE " + CRACKLE_CHANCE);
 
                 // no, I did not actually code the audio manipulation part of the filter since I'm not the best at working with audio
 

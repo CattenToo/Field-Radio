@@ -1,21 +1,15 @@
 package arnett.fieldRadio.Items.Radio;
 
-import arnett.fieldRadio.FieldRadio;
-import arnett.fieldRadio.FieldRadioVoiceChat;
+import arnett.fieldRadio.Radio;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.checkerframework.common.initializedfields.qual.InitializedFields;
 
-public class RadioVoiceChatListener implements Listener {
+public class FieldRadioVoiceChatListener implements Listener {
 
     @EventHandler
     public void onInventoryChange(PlayerInventorySlotChangeEvent e)
@@ -26,7 +20,7 @@ public class RadioVoiceChatListener implements Listener {
         // which causes an issue because WHY! (syncing that's why)
 
         // only when a radio is involved and the same radio isn't changed by itself.
-        if(Radio.isRadio(e.getNewItemStack()))
+        if(FieldRadio.isRadio(e.getNewItemStack()))
         {
             if(e.getOldItemStack().getType().equals(Material.AIR))
             {
@@ -36,35 +30,35 @@ public class RadioVoiceChatListener implements Listener {
                 // so screw it, one tick later we'll just refresh the player
                 // ONLY IF they already are connected to the frequency
 
-                String frequency = Radio.getFrequency(e.getNewItemStack());
+                String frequency = FieldRadio.getFrequency(e.getNewItemStack());
 
-                if(RadioVoiceChat.isOnFrequency(frequency, e.getPlayer()))
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(FieldRadio.singleton, () -> {
-                        RadioVoiceChat.refresh(frequency, e.getPlayer());
+                if(FieldRadioVoiceChat.isOnFrequency(frequency, e.getPlayer()))
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Radio.singleton, () -> {
+                        FieldRadioVoiceChat.refresh(frequency, e.getPlayer());
                     }, 1);
             }
 
-            FieldRadio.logger.info("Picked Up Radio <" + Radio.getFrequency(e.getNewItemStack()) + "> by " + e.getPlayer().getName());
+            Radio.logger.info("Picked Up Radio <" + FieldRadio.getFrequency(e.getNewItemStack()) + "> by " + e.getPlayer().getName());
 
             //radio added to inventory
             //set player to listen to frequency
-            RadioVoiceChat.addToFrequency(Radio.getFrequency(e.getNewItemStack()), e.getPlayer().getUniqueId());
+            FieldRadioVoiceChat.addToFrequency(FieldRadio.getFrequency(e.getNewItemStack()), e.getPlayer().getUniqueId());
         }
-        if(Radio.isRadio(e.getOldItemStack()))
+        if(FieldRadio.isRadio(e.getOldItemStack()))
         {
 
-            FieldRadio.logger.info("Removed Radio <" + Radio.getFrequency(e.getOldItemStack()) + "> by " + e.getPlayer().getName());
+            Radio.logger.info("Removed Radio <" + FieldRadio.getFrequency(e.getOldItemStack()) + "> by " + e.getPlayer().getName());
 
             //radio removed from inventory
             //remove player from listen to frequency
-            RadioVoiceChat.removeFromFrequency(Radio.getFrequency(e.getOldItemStack()), e.getPlayer().getUniqueId());
+            FieldRadioVoiceChat.removeFromFrequency(FieldRadio.getFrequency(e.getOldItemStack()), e.getPlayer().getUniqueId());
         }
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e)
     {
-        RadioVoiceChat.removeFromGrace(e.getPlayer().getUniqueId());
+        FieldRadioVoiceChat.removeFromGrace(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -73,6 +67,6 @@ public class RadioVoiceChatListener implements Listener {
         // so when a player joins their inventory is refreshed by the server which means
         // the inventory slot change event will be called, so we just have to remove
         // all their existing entries if any (which would be the case if there is a serer stop)
-        RadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
+        FieldRadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
     }
 }

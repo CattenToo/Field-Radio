@@ -22,7 +22,7 @@ frequency-representation:
   separating-string: "-"
 
 # Radio
-radio:
+fieldradio:
   audio-filter:
     enabled: true
     LP-alpha: 0.8  # Lower = more muffled

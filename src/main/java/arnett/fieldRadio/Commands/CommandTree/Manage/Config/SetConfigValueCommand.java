@@ -1,8 +1,7 @@
 package arnett.fieldRadio.Commands.CommandTree.Manage.Config;
 
 import arnett.fieldRadio.Commands.SubCommand;
-import arnett.fieldRadio.FieldRadio;
-import org.apache.logging.log4j.spi.ObjectThreadContextMap;
+import arnett.fieldRadio.Radio;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -28,8 +27,8 @@ public class SetConfigValueCommand implements SubCommand {
 
         SubCommand.super.execute(player, args, level);
 
-        Object previous = FieldRadio.singleton.getConfig().get(args[level]);
-        FieldRadio.singleton.getConfig().set(args[level], args[level+1]);
+        Object previous = Radio.singleton.getConfig().get(args[level]);
+        Radio.singleton.getConfig().set(args[level], args[level+1]);
         player.sendMessage(args[level] + " set from " + previous + " to " + args[level+1]);
         return true;
     }
@@ -43,6 +42,6 @@ public class SetConfigValueCommand implements SubCommand {
     public List<String> getSubcommandArguments(Player player, String[] args, int level) {
         if(args.length != level)
             return List.of();
-        return FieldRadio.singleton.getConfig().getKeys(true).stream().toList();
+        return Radio.singleton.getConfig().getKeys(true).stream().toList();
     }
 }

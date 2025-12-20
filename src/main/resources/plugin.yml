@@ -1,6 +1,6 @@
 name: FieldRadio
 version: '1.1-ALPHA'
-main: arnett.fieldRadio.FieldRadio
+main: arnett.fieldRadio.Radio
 api-version: '1.21'
 
 commands:

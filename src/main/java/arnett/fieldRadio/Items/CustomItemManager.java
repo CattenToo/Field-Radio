@@ -1,11 +1,11 @@
 package arnett.fieldRadio.Items;
 
 import arnett.fieldRadio.Config;
-import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.Radio;
 import arnett.fieldRadio.FrequencyManager;
-import arnett.fieldRadio.Items.Radio.Radio;
-import arnett.fieldRadio.Items.Radio.RadioListener;
-import arnett.fieldRadio.Items.Radio.RadioVoiceChatListener;
+import arnett.fieldRadio.Items.Radio.FieldRadio;
+import arnett.fieldRadio.Items.Radio.FieldRadioListener;
+import arnett.fieldRadio.Items.Radio.FieldRadioVoiceChatListener;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -21,20 +21,20 @@ public class CustomItemManager {
     public static void registerItemEvents(JavaPlugin plugin)
     {
         //radio
-        plugin.getServer().getPluginManager().registerEvents(new RadioListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new FieldRadioListener(), plugin);
     }
 
     public static void registerVoiceChatItemEvents(JavaPlugin plugin)
     {
         //radio
-        plugin.getServer().getPluginManager().registerEvents(new RadioVoiceChatListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new FieldRadioVoiceChatListener(), plugin);
     }
 
     public static void registerRecipies()
     {
         //radio
         if(Config.radio_recipe_basic_enabled)
-            for(Recipe r : Radio.getRecipes())
+            for(Recipe r : FieldRadio.getRecipes())
                 Bukkit.addRecipe(r);
     }
 
@@ -78,7 +78,7 @@ public class CustomItemManager {
             }
         }
         catch (Exception ignored){
-            FieldRadio.logger.info(subFrequency + " Fialed to get color: " + dye);
+            Radio.logger.info(subFrequency + " Fialed to get color: " + dye);
         }
 
         return Color.WHITE;

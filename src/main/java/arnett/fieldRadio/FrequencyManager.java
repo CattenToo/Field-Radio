@@ -2,7 +2,6 @@ package arnett.fieldRadio;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.bukkit.Material;
 
 public class FrequencyManager {
 
@@ -15,8 +14,8 @@ public class FrequencyManager {
 
         //sets up 2 way map for quick frequency color refrence
         for (String key : Config.frequencyRepresentationDyes.getKeys(false)) {
-            FieldRadio.logger.info(key);
-            FieldRadio.logger.info(Config.frequencyRepresentationDyes.getString(key));
+            Radio.logger.info(key);
+            Radio.logger.info(Config.frequencyRepresentationDyes.getString(key));
             dyeMap.put(key, Config.frequencyRepresentationDyes.getString(key));
         }
     }

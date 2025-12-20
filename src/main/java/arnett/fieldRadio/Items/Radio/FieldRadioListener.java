@@ -1,15 +1,13 @@
 package arnett.fieldRadio.Items.Radio;
 
 import arnett.fieldRadio.Config;
-import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.Radio;
 import arnett.fieldRadio.Items.CustomItemManager;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Crafter;
 import org.bukkit.entity.Player;
@@ -24,14 +22,14 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 import java.util.Optional;
 
-public class RadioListener implements Listener {
+public class FieldRadioListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onMessageSent(AsyncChatEvent e)
     {
         //todo config for disabling global chat
 
-        Optional<ItemStack> sendingRadio = Radio.getHeldRadio(e.getPlayer());
+        Optional<ItemStack> sendingRadio = FieldRadio.getHeldRadio(e.getPlayer());
 
         //check for radio being held, if not, continue normally
         if(sendingRadio.isEmpty())
@@ -45,12 +43,12 @@ public class RadioListener implements Listener {
                 return true;
 
             //check if they have radio
-            ItemStack[] inventoryRadios = Radio.getRadiosFromPlayer(player);
+            ItemStack[] inventoryRadios = FieldRadio.getRadiosFromPlayer(player);
 
             for (ItemStack receivingRadio : inventoryRadios)
             {
                 //frequency check
-                if(Radio.matchingFrequencies(sendingRadio.get(), receivingRadio))
+                if(FieldRadio.matchingFrequencies(sendingRadio.get(), receivingRadio))
                     return false;
             }
 
@@ -59,13 +57,13 @@ public class RadioListener implements Listener {
 
         });
 
-        String frequency = Radio.getFrequency(sendingRadio.get());
+        String frequency = FieldRadio.getFrequency(sendingRadio.get());
 
         //get main frequency now since it's used multiple times
         String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
         TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
 
-        FieldRadio.logger.info("Message Sent on Frequency <" + frequency + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
+        Radio.logger.info("Message Sent on Frequency <" + frequency + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
 
         //build a new message
         e.renderer((source, sourceDisplayName, message, viewer) -> {
@@ -75,7 +73,7 @@ public class RadioListener implements Listener {
             String[] split = frequency.split(Config.frequencySplitString);
             for(int i = 0; i < split.length; i++)
             {
-                FieldRadio.logger.info(split[i]);
+                Radio.logger.info(split[i]);
                 c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
                         .color(CustomItemManager.getFrequencyTextColor(split[i]))
                     );
@@ -95,7 +93,7 @@ public class RadioListener implements Listener {
     @EventHandler
     public void onRadioCraftered(CrafterCraftEvent e)
     {
-        if (!Radio.isRadio(e.getRecipe().getResult()))
+        if (!FieldRadio.isRadio(e.getRecipe().getResult()))
             //not radio recipe so skip
             return;
 
@@ -143,7 +141,7 @@ public class RadioListener implements Listener {
                         }
                         else
                         {
-                            FieldRadio.logger.info("Failed recipe with " + dyesChecker[digit] + " " + Config.frequencyRepresentationDyes.getString(item.name()));
+                            Radio.logger.info("Failed recipe with " + dyesChecker[digit] + " " + Config.frequencyRepresentationDyes.getString(item.name()));
                             //invalid recipe
                             e.setCancelled(true);
                             return;
@@ -154,12 +152,12 @@ public class RadioListener implements Listener {
         }
 
         result.editPersistentDataContainer(pdc -> {
-            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
+            pdc.set(FieldRadio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
         });
 
         result.lore(List.of(Component.text(frequency.toString())));
 
-        FieldRadio.logger.info("Radio Prepared: " + frequency);
+        Radio.logger.info("Radio Prepared: " + frequency);
 
         //update result (tbh not sure if this is necessary)
         e.setResult(result);
@@ -172,7 +170,7 @@ public class RadioListener implements Listener {
             //invalid recipe so skip
             return;
 
-        if (!Radio.isRadio(e.getRecipe().getResult()))
+        if (!FieldRadio.isRadio(e.getRecipe().getResult()))
             //not radio recipe so skip
             return;
 
@@ -233,12 +231,12 @@ public class RadioListener implements Listener {
         frequency.setLength(frequency.length() - 1);
 
         result.editPersistentDataContainer(pdc -> {
-            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
+            pdc.set(FieldRadio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
         });
 
         result.lore(List.of(Component.text(frequency.toString())));
 
-        FieldRadio.logger.info("Radio Prepared: " + frequency);
+        Radio.logger.info("Radio Prepared: " + frequency);
 
         //update result (tbh not sure if this is necessary)
         e.getInventory().setResult(result);

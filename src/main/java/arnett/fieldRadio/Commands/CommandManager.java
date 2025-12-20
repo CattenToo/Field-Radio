@@ -9,7 +9,6 @@ import arnett.fieldRadio.Commands.CommandTree.Manage.Config.ReloadConfigCommand;
 import arnett.fieldRadio.Commands.CommandTree.ManageBranch;
 import arnett.fieldRadio.Commands.CommandTree.Monitor.FrequencyDisplayCommand;
 import arnett.fieldRadio.Commands.CommandTree.MonitorBranch;
-import arnett.fieldRadio.FieldRadio;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
