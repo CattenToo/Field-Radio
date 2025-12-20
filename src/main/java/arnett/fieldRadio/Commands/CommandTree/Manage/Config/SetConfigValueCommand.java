@@ -30,7 +30,7 @@ public class SetConfigValueCommand implements SubCommand {
 
         Object previous = FieldRadio.singleton.getConfig().get(args[level]);
         FieldRadio.singleton.getConfig().set(args[level], args[level+1]);
-        player.sendMessage(args[level-2] + " set from " + previous + " to " + args[level-1]);
+        player.sendMessage(args[level] + " set from " + previous + " to " + args[level+1]);
         return true;
     }
 
@@ -43,6 +43,6 @@ public class SetConfigValueCommand implements SubCommand {
     public List<String> getSubcommandArguments(Player player, String[] args, int level) {
         if(args.length != level)
             return List.of();
-        return FieldRadio.config.getKeys(true).stream().toList();
+        return FieldRadio.singleton.getConfig().getKeys(true).stream().toList();
     }
 }

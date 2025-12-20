@@ -1,6 +1,26 @@
 # enable the plugin
 enabled: true
 
+frequency-representation:
+  dyes:
+    WHITE: "Whi"
+    LIGHT_GRAY: "LGr"
+    GRAY: "Gra"
+    BLACK: "Bla"
+    BROWN: "Bro"
+    RED: "Red"
+    ORANGE: "Ora"
+    YELLOW: "Yel"
+    LIME: "Lim"
+    GREEN: "Gre"
+    CYAN: "Cya"
+    LIGHT_BLUE: "LBl"
+    BLUE: "Blu"
+    PURPLE: "Pur"
+    MAGENTA: "Mag"
+    PINK: "Pin"
+  separating-string: "-"
+
 # Radio
 radio:
   audio-filter:
@@ -15,9 +35,10 @@ radio:
     basic:
       enabled: true
 
-      #MUST HAVE TWO "DYES" FOR FREQUENCY
+      # Use 0 for main frequency and numbers 1 - 9 for subfrequencies,
+      # MUST have a main frequency and AT LEAST ONE subfrequency
       shape:
-        - "O12"
+        - "O01"
         - "IAI"
         - "IRI"
       ingredients:
@@ -25,5 +46,3 @@ radio:
         I: "IRON_INGOT"
         R: "REDSTONE"
         A: "AMETHYST_SHARD"
-        1: "DYES"
-        2: "DYES"

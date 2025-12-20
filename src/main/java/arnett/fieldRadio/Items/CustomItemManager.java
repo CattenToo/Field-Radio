@@ -2,10 +2,14 @@ package arnett.fieldRadio.Items;
 
 import arnett.fieldRadio.Config;
 import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.FrequencyManager;
 import arnett.fieldRadio.Items.Radio.Radio;
 import arnett.fieldRadio.Items.Radio.RadioListener;
 import arnett.fieldRadio.Items.Radio.RadioVoiceChatListener;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,5 +36,56 @@ public class CustomItemManager {
         if(Config.radio_recipe_basic_enabled)
             for(Recipe r : Radio.getRecipes())
                 Bukkit.addRecipe(r);
+    }
+
+    //returns recipe without choice items
+    public static String[] getIndependentRecipe(String[] recipe)
+    {
+        StringBuilder newRecipeLine = new StringBuilder();
+
+        for(int i = 0; i < recipe.length; i++)
+        {
+            for (char c : recipe[i].toCharArray())
+            {
+                if(Character.isDigit(c))
+                    newRecipeLine.append(" ");
+                else
+                    newRecipeLine.append(c);
+            }
+
+            recipe[i] = newRecipeLine.toString();
+            newRecipeLine.setLength(0);
+        }
+
+        return recipe;
+    }
+
+    public static TextColor getFrequencyTextColor(String subFrequency)
+    {
+        return TextColor.color(getFrequencyColor(subFrequency).asRGB());
+    }
+
+    public static Color getFrequencyColor(String subFrequency)
+    {
+        String dye = FrequencyManager.dyeMap.inverse().get(subFrequency);
+
+        try
+        {
+
+            if(Config.frequencyRepresentationDyes.getString(dye).equals(subFrequency))
+            {
+                return DyeColor.valueOf(dye).getColor();
+            }
+        }
+        catch (Exception ignored){
+            FieldRadio.logger.info(subFrequency + " Fialed to get color: " + dye);
+        }
+
+        return Color.WHITE;
+    }
+
+    public static Color getDulledFrequencyColor(String subFrequency)
+    {
+        return getFrequencyColor(subFrequency).mixColors(Color.WHITE);
     }
 }

@@ -1,6 +1,9 @@
 package arnett.fieldRadio.Commands.CommandTree.Give;
 
 import arnett.fieldRadio.Commands.SubCommand;
+import arnett.fieldRadio.Config;
+import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.FrequencyManager;
 import arnett.fieldRadio.Items.Radio.Radio;
 import arnett.fieldRadio.Items.Radio.RadioVoiceChat;
 import org.bukkit.entity.Player;
@@ -14,10 +17,20 @@ public class GiveFieldRadioCommang implements SubCommand {
         if(args.length <= level)
         {
             //no frequency provided
-            player.give(Radio.getRadio("defualt/default"));
+            player.give(Radio.getRadio("BRODCAST"));
             return true;
         }
-        player.give(Radio.getRadio(args[level]));
+
+        StringBuilder frequency = new StringBuilder();
+
+        for(int i = level; i < args.length; i++)
+        {
+            frequency.append(args[i]).append(Config.frequencySplitString);
+        }
+
+        frequency.setLength(frequency.length() - 1);
+
+        player.give(Radio.getRadio(frequency.toString()));
         return true;
     }
 
@@ -44,6 +57,6 @@ public class GiveFieldRadioCommang implements SubCommand {
 
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args, int level) {
-        return List.of(RadioVoiceChat.getFrequencys().keySet().toArray(new String[0]));
+        return FrequencyManager.dyeMap.inverse().keySet().stream().toList();
     }
 }

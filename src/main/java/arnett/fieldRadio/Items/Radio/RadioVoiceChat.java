@@ -1,6 +1,10 @@
 package arnett.fieldRadio.Items.Radio;
 
+import arnett.fieldRadio.Config;
+import arnett.fieldRadio.FieldRadio;
 import arnett.fieldRadio.FieldRadioVoiceChat;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -135,4 +139,5 @@ public class RadioVoiceChat {
             if(Radio.getFrequency(radio).equalsIgnoreCase(frequency))
                 addToFrequency(Radio.getFrequency(radio), target.getUniqueId());
     }
+
 }

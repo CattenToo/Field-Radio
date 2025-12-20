@@ -23,20 +23,23 @@ public final class FieldRadio extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        //make sure config is present
+        saveDefaultConfig();
+
+        logger = getLogger();
         //setup fields for ease of use
         singleton = this;
         //Config is a custom class for ease of use which inherits from class of getConfig()
         config = getConfig();
 
-        logger = getLogger();
+
+        FrequencyManager.reload();
 
         if(!Config.enabled)
         {
             return;
         }
 
-        //make sure config is present
-        saveDefaultConfig();
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             // This prints the exact name needed for your plugin.yml
@@ -45,7 +48,6 @@ public final class FieldRadio extends JavaPlugin {
 
         //sets up voicechat things if server has voicecehat
         setupVoicechatFunctionality();
-
 
         // registers listeners
         CustomItemManager.registerItemEvents(this);
@@ -86,8 +88,12 @@ public final class FieldRadio extends JavaPlugin {
     public void reloadConfig()
     {
         super.reloadConfig();
-        if(singleton == null)
-            singleton = this;
+
         config = getConfig();
+        Config.refresh();
+
+        if(logger != null)
+            FrequencyManager.reload();
     }
+
 }

@@ -49,28 +49,37 @@ public class Radio {
             //defines the ingredients (the letters in the shape)
             if (ingredients != null) {
                 for (String key : ingredients.getKeys(false)) {
-                    //in case material is dye option
-                    if((ingredients.get(key) instanceof String str) && str.equalsIgnoreCase("dyes"))
-                    {
-                        FieldRadio.logger.info("Set " + key.charAt(0) + " to DYES");
-                        recipe.setIngredient(key.charAt(0), dyes);
-                    }
+
                     //just a basic material
-                    else {
-                        Material mat;
-                        try{
-                            mat = Material.matchMaterial(ingredients.getString(key));
-                        }
-                        catch (Exception e)
-                        {
-                            //material not found or something went wrong
-                            FieldRadio.logger.info("Incorrectly registered Material For Radio basic recipe");
-                            mat = Material.AIR;
-                        }
-                        if (mat != null) {
-                            recipe.setIngredient(key.charAt(0), mat);
-                        }
+                    Material mat;
+                    try{
+                        mat = Material.matchMaterial(ingredients.getString(key));
                     }
+                    catch (Exception e)
+                    {
+                        //material not found or something went wrong
+                        FieldRadio.logger.info("Incorrectly registered Material For Radio basic recipe");
+                        mat = Material.AIR;
+                    }
+                    if (mat != null) {
+                        recipe.setIngredient(key.charAt(0), mat);
+                    }
+                }
+            }
+
+            //add dyes
+            for(int i = 0; i < 8; i++)
+            {
+                try
+                {
+                    recipe.setIngredient((char)( i + '0'), dyes);
+                    FieldRadio.logger.info("Added Dye for " + i);
+                }
+                catch (Exception e)
+                {
+                    FieldRadio.logger.info("stopped at " + i);
+                    //frequency not in recipe so exit
+                    break;
                 }
             }
 
@@ -183,4 +192,5 @@ public class Radio {
     {
         return  DyeColor.valueOf(frequency).getColor().asRGB();
     }
+
 }

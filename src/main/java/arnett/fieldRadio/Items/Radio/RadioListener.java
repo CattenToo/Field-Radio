@@ -2,10 +2,13 @@ package arnett.fieldRadio.Items.Radio;
 
 import arnett.fieldRadio.Config;
 import arnett.fieldRadio.FieldRadio;
+import arnett.fieldRadio.Items.CustomItemManager;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Crafter;
@@ -56,25 +59,35 @@ public class RadioListener implements Listener {
 
         });
 
-
         String frequency = Radio.getFrequency(sendingRadio.get());
-        String mainFq = frequency.substring(0, frequency.indexOf('/'));
-        String subFq = frequency.substring(frequency.indexOf('/') + 1);
 
-        TextColor mainFqColor = TextColor.color(Radio.getFrequencyColor(mainFq));
-        TextColor subFqColor = TextColor.color(Radio.getFrequencyColor(subFq));
+        //get main frequency now since it's used multiple times
+        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
 
-        FieldRadio.logger.info("Message Sent on Frequency <" + mainFq + "/" + subFq + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
+        FieldRadio.logger.info("Message Sent on Frequency <" + frequency + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
 
         //build a new message
         e.renderer((source, sourceDisplayName, message, viewer) -> {
 
-            return Component.text("<" + mainFq).color(mainFqColor)
-                    .append(Component.text("/").color(mainFqColor))
-                    .append(Component.text(subFq + "> ").color(subFqColor))
-                    .append(sourceDisplayName.color(mainFqColor))
-                    .append(Component.text(": ").color(mainFqColor))
-                    .append(message.color(subFqColor));
+            TextComponent c = Component.text("<").color(mainFqTextColor);
+
+            String[] split = frequency.split(Config.frequencySplitString);
+            for(int i = 0; i < split.length; i++)
+            {
+                FieldRadio.logger.info(split[i]);
+                c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+                        .color(CustomItemManager.getFrequencyTextColor(split[i]))
+                    );
+
+            }
+
+            c = c.append(Component.text( "> ")).color(mainFqTextColor)
+            .append(sourceDisplayName.color(TextColor.color(CustomItemManager.getDulledFrequencyColor(split[split.length-1]).asRGB())))
+            .append(Component.text(": ")
+            .append(message).color(TextColor.color(CustomItemManager.getDulledFrequencyColor(mainFq).asRGB())));
+
+            return c;
         });
 
     }
@@ -91,30 +104,62 @@ public class RadioListener implements Listener {
         //returns what is put in the crafting interface
         ItemStack[] mtx = ((Crafter)e.getBlock().getState()).getInventory().getContents();
 
-        ItemStack dye1 = ItemStack.of(Material.GRAY_DYE);
-        ItemStack dye2 = ItemStack.of(Material.GRAY_DYE);
-
         //get position of dyes
-        //yes this is bad but It'll get reworked with some other stuff later
-        // todo REWORK
-        for(int i = 0; i < Config.radio_recipe_basic_shape.size(); i++)
+        StringBuilder frequency = new StringBuilder();
+
+        //stores which dye was used for which frequency
+        //useful if recipe required two or more dyes for the same sub frequency
+        String[] dyesChecker = new String[8];
+
+        List<String> shape = Config.radio_recipe_basic_shape;
+
+        //check matrix for dyes in correct places
+        for(int i = 0; i < shape.size(); i++ )
         {
-            if(Config.radio_recipe_basic_shape.get(i).contains("1"))
-                dye1 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('1')];
-            if(Config.radio_recipe_basic_shape.get(i).contains("2"))
-                dye2 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('2')];
+            for(int j = 0; j < shape.get(i).length(); j++)
+            {
+                char checked = shape.get(i).charAt(j);
+
+                if(Character.isDigit(checked))
+                {
+
+                    Material item = mtx[i*3 + j].getType();
+                    int digit = Character.getNumericValue(checked);
+
+                    //dye
+                    if(dyesChecker[digit] == null)
+                    {
+                        //has not yet been added
+                        //so just add dye to frequency and to dyes checker
+                        frequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                        frequency.append((digit == 0 ? '/' : '.'));
+                        dyesChecker[digit] = Config.frequencyRepresentationDyes.getString(item.name());
+                    }
+                    else {
+                        //has been added so check if it is the same as the others for this level
+                        if(dyesChecker[digit].equals(Config.frequencyRepresentationDyes.getString(item.name())))
+                        {
+                            frequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                        }
+                        else
+                        {
+                            FieldRadio.logger.info("Failed recipe with " + dyesChecker[digit] + " " + Config.frequencyRepresentationDyes.getString(item.name()));
+                            //invalid recipe
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
-        String frequency = dye1.getType().name().replace("_DYE", "");
-        String subfrequency = dye2.getType().name().replace("_DYE", "");
-
         result.editPersistentDataContainer(pdc -> {
-            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency + "/" + subfrequency);
+            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
         });
 
-        result.lore(List.of(Component.text(frequency + "/" + subfrequency)));
+        result.lore(List.of(Component.text(frequency.toString())));
 
-        FieldRadio.logger.info("Radio Prepared: " + frequency + "/" + subfrequency);
+        FieldRadio.logger.info("Radio Prepared: " + frequency);
 
         //update result (tbh not sure if this is necessary)
         e.setResult(result);
@@ -136,31 +181,64 @@ public class RadioListener implements Listener {
         //returns what is put in the crafting interface
         ItemStack[] mtx = e.getInventory().getMatrix();
 
-        ItemStack dye1 = ItemStack.of(Material.GRAY_DYE);
-        ItemStack dye2 = ItemStack.of(Material.GRAY_DYE);
-
         //get position of dyes
-        //yes this is bad but It'll get reworked with some other stuff later
-        // todo REWORK
-        for(int i = 0; i < Config.radio_recipe_basic_shape.size(); i++)
+        StringBuilder frequency = new StringBuilder();
+
+        //stores which dye was used for which frequency
+        //useful if recipe required two or more dyes for the same sub frequency
+        String[] dyesChecker = new String[8];
+
+        List<String> shape = Config.radio_recipe_basic_shape;
+
+        //check matrix for dyes in correct places
+        for(int i = 0; i < shape.size(); i++ )
         {
-            if(Config.radio_recipe_basic_shape.get(i).contains("1"))
-                dye1 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('1')];
-            if(Config.radio_recipe_basic_shape.get(i).contains("2"))
-                dye2 = mtx[Config.radio_recipe_basic_shape.get(i).indexOf('2')];
+            for(int j = 0; j < shape.get(i).length(); j++)
+            {
+                char checked = shape.get(i).charAt(j);
+
+                if(Character.isDigit(checked))
+                {
+
+                    Material item = mtx[i*3 + j].getType();
+                    int digit = Character.getNumericValue(checked);
+
+                    //dye
+                    if(dyesChecker[digit] == null)
+                    {
+                        //has not yet been added
+                        //so just add dye to frequency and to dyes checker
+                        frequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                        frequency.append((digit == 0 ? '/' : '.'));
+                        dyesChecker[digit] = Config.frequencyRepresentationDyes.getString(item.name());
+                    }
+                    else {
+                        //has been added so check if it is the same as the others for this level
+                        if(dyesChecker[digit].equals(Config.frequencyRepresentationDyes.getString(item.name())))
+                        {
+                            frequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                        }
+                        else
+                        {
+                            //invalid recipe
+                            e.getInventory().setResult(new ItemStack(Material.AIR));
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
-
-        String frequency = dye1.getType().name().replace("_DYE", "");
-        String subfrequency = dye2.getType().name().replace("_DYE", "");
+        //chop off last bit (the / or .)
+        frequency.setLength(frequency.length() - 1);
 
         result.editPersistentDataContainer(pdc -> {
-            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency + "/" + subfrequency);
+            pdc.set(Radio.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
         });
 
-        result.lore(List.of(Component.text(frequency + "/" + subfrequency)));
+        result.lore(List.of(Component.text(frequency.toString())));
 
-        FieldRadio.logger.info("Radio Prepared: " + frequency + "/" + subfrequency);
+        FieldRadio.logger.info("Radio Prepared: " + frequency);
 
         //update result (tbh not sure if this is necessary)
         e.getInventory().setResult(result);

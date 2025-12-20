@@ -96,6 +96,18 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
         //so player doesn't hear themselves
         processed.add(player.getUniqueId());
 
+        // Filter states to maintain continuity across packets
+        double lowPassState = 0;
+        double highPassState = 0;
+        double lastRawSample = 0;
+        Random random = new Random();
+
+        // Configuration constants
+        double LP_ALPHA = Config.radio_audioFilter_LPAlpha; // Lower = more muffled
+        double HP_ALPHA = Config.radio_audioFilter_HPAlpha; // Higher = less bass
+        int NOISE_FLOOR = Config.radio_audioFilter_noiseFloor;  // Constant hiss volume
+        int CRACKLE_CHANCE = Config.radio_audioFilter_crackleChance; // 1 in 2000 samples
+
         for(UUID id : RadioVoiceChat.frequencyListeners.get(frequency))
         {
             //skip if already added to set (they've already been sent the packet)
@@ -118,17 +130,8 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
                 //modify packet
                 short[] decodedData = decoder.decode(audioData);
 
-                // Filter states to maintain continuity across packets
-                double lowPassState = 0;
-                double highPassState = 0;
-                double lastRawSample = 0;
-                Random random = new Random();
 
-                // Configuration constants
-                double LP_ALPHA = Config.radio_audioFilter_LPAlpha; // Lower = more muffled
-                double HP_ALPHA = Config.radio_audioFilter_HPAlpha; // Higher = less bass
-                int NOISE_FLOOR = Config.radio_audioFilter_noiseFloor;  // Constant hiss volume
-                int CRACKLE_CHANCE = Config.radio_audioFilter_crackleChance; // 1 in 2000 samples
+                FieldRadio.logger.info("CRACKLE_CHANCE " + CRACKLE_CHANCE);
 
                 // no, I did not actually code the audio manipulation part of the filter since I'm not the best at working with audio
 
@@ -166,7 +169,6 @@ public class FieldRadioVoiceChat implements VoicechatPlugin {
                 audioData = encoder.encode(decodedData);
             }
 
-            FieldRadio.logger.info("Recived by " + Bukkit.getPlayer(id).getName());
             //send audio
             serverVC.sendStaticSoundPacketTo(connection, e.getPacket().staticSoundPacketBuilder().opusEncodedData(audioData).build());
         }
