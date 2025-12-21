@@ -21,7 +21,7 @@ frequency-representation:
     PINK: "Pin"
   separating-string: "-"
 
-# Radio
+# Field Radio
 fieldradio:
   audio-filter:
     enabled: true
@@ -46,3 +46,8 @@ fieldradio:
         I: "IRON_INGOT"
         R: "REDSTONE"
         A: "AMETHYST_SHARD"
+
+speaker:
+  # if changing the head type you MUST update the speaker in the resource pack as well
+  # to override that head, Don't forget about that part
+  head-type: "PIGLIN_HEAD"

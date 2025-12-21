@@ -33,7 +33,7 @@ public class CustomItemManager {
     public static void registerRecipies()
     {
         //radio
-        if(Config.radio_recipe_basic_enabled)
+        if(Config.fieldRadio_recipe_basic_enabled)
             for(Recipe r : FieldRadio.getRecipes())
                 Bukkit.addRecipe(r);
     }

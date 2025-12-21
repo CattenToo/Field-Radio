@@ -64,7 +64,7 @@ public class RadioVoiceChat implements VoicechatPlugin {
         else if (player.hasActiveItem())
         {
             //update Grace period
-            arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.playersInGracePeroid.put(player.getUniqueId(), System.nanoTime() + Config.radio_gracePeriod);
+            arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.playersInGracePeroid.put(player.getUniqueId(), System.nanoTime() + Config.fieldRadio_gracePeriod);
         }
         else
         {
@@ -96,10 +96,10 @@ public class RadioVoiceChat implements VoicechatPlugin {
         Random random = new Random();
 
         // Configuration constants
-        double LP_ALPHA = Config.radio_audioFilter_LPAlpha; // Lower = more muffled
-        double HP_ALPHA = Config.radio_audioFilter_HPAlpha; // Higher = less bass
-        int NOISE_FLOOR = Config.radio_audioFilter_noiseFloor;  // Constant hiss volume
-        int CRACKLE_CHANCE = Config.radio_audioFilter_crackleChance; // 1 in 2000 samples
+        double LP_ALPHA = Config.fieldRadio_audioFilter_LPAlpha; // Lower = more muffled
+        double HP_ALPHA = Config.fieldRadio_audioFilter_HPAlpha; // Higher = less bass
+        int NOISE_FLOOR = Config.fieldRadio_audioFilter_noiseFloor;  // Constant hiss volume
+        int CRACKLE_CHANCE = Config.fieldRadio_audioFilter_crackleChance; // 1 in 2000 samples
 
         for(UUID id : arnett.fieldRadio.Items.Radio.FieldRadioVoiceChat.frequencyListeners.get(frequency))
         {
@@ -118,7 +118,7 @@ public class RadioVoiceChat implements VoicechatPlugin {
 
             byte[] audioData = e.getPacket().getOpusEncodedData();
 
-            if(Config.radio_audioFilter_enabled)
+            if(Config.fieldRadio_audioFilter_enabled)
             {
                 //modify packet
                 short[] decodedData = decoder.decode(audioData);

@@ -109,7 +109,7 @@ public class FieldRadioListener implements Listener {
         //useful if recipe required two or more dyes for the same sub frequency
         String[] dyesChecker = new String[8];
 
-        List<String> shape = Config.radio_recipe_basic_shape;
+        List<String> shape = Config.fieldRadio_recipe_basic_shape;
 
         //check matrix for dyes in correct places
         for(int i = 0; i < shape.size(); i++ )
@@ -186,7 +186,7 @@ public class FieldRadioListener implements Listener {
         //useful if recipe required two or more dyes for the same sub frequency
         String[] dyesChecker = new String[8];
 
-        List<String> shape = Config.radio_recipe_basic_shape;
+        List<String> shape = Config.fieldRadio_recipe_basic_shape;
 
         //check matrix for dyes in correct places
         for(int i = 0; i < shape.size(); i++ )
