@@ -1,5 +1,6 @@
 package arnett.radio;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class Config {
     public static boolean speaker_useEntity;
 
         // block
-        public static String speaker_block_headType;
+        public static Material speaker_block_headType;
 
         // entity
 
@@ -68,8 +69,11 @@ public class Config {
         speaker_useEntity = Radio.config.getBoolean("speaker.use-entity");
 
             //block
-            speaker_block_headType = Radio.config.getString("speaker.block.head-type");
+            speaker_block_headType = Material.matchMaterial(Radio.config.getString("speaker.block.head-type"));
 
             //entity
+
+        //specail cases that need reloading
+
     }
 }

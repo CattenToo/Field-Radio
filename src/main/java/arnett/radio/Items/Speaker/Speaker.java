@@ -42,7 +42,7 @@ public class Speaker {
         ItemStack speaker;
 
         try {
-            speaker = new ItemStack(Material.matchMaterial(Config.speaker_block_headType));
+            speaker = new ItemStack(Config.speaker_block_headType);
         }
         catch (Exception e)
         {

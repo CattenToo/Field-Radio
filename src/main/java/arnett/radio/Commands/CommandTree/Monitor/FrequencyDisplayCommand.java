@@ -6,11 +6,13 @@ import arnett.radio.FrequencyManager;
 import arnett.radio.Items.Radio.FieldRadio;
 import arnett.radio.Items.Radio.FieldRadioVoiceChat;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.slf4j.event.KeyValuePair;
 
 import java.util.*;
 
@@ -37,15 +39,23 @@ public class FrequencyDisplayCommand implements SubCommand {
     @Override
     public boolean execute(Player player, String[] args, int level) {
 
+        //this is just a permission check
         SubCommand.super.execute(player, args, level);
 
         Map<String, ArrayList<UUID>> map = FieldRadioVoiceChat.getFrequencys();
+
+        //monitoring frequency
+        StringBuilder argFrequency = new StringBuilder();
+
+        for(String s : args)
+            argFrequency.append(s).append(Config.frequencySplitString);
 
         StringBuilder playerList = new StringBuilder();
         map.forEach((frequency, players) -> {
 
             //check if args match frequency
-
+            if(!frequency.startsWith(argFrequency.toString()))
+                return;
 
             for(UUID id : players)
             {
@@ -60,23 +70,14 @@ public class FrequencyDisplayCommand implements SubCommand {
                 playerList.append(", ");
             }
 
-            //split to main and sub
-            String main = frequency.substring( 0, frequency.indexOf(Config.frequencySplitString));
-            String sub = frequency.substring(frequency.indexOf(Config.frequencySplitString) + 1);
-
             //display
-            player.sendMessage(Component.text("<" + main + Config.frequencySplitString).color(TextColor.color(FieldRadio.getFrequencyColor(main)))
-                    .append(Component.text(sub + "> ").color(TextColor.color(FieldRadio.getFrequencyColor(sub))))
+            player.sendMessage(FrequencyManager.getColoredFrequencyTag(frequency)
                     .append(Component.text(playerList.toString())));
 
             playerList.setLength(0);
         });
 
-            //no one's got a radio
-            if(map.isEmpty())
-            {
-                player.sendMessage(Component.text("No Active Listeners").decorate(TextDecoration.BOLD));
-            }
+        player.sendMessage(Component.text("Search Complete").decorate(TextDecoration.BOLD));
 
         return true;
     }

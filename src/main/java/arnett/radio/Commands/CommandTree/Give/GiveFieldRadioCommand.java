@@ -55,6 +55,6 @@ public class GiveFieldRadioCommand implements SubCommand {
 
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args, int level) {
-        return FrequencyManager.dyeMap.inverse().keySet().stream().toList();
+        return FrequencyManager.dyeMap.keySet().stream().toList();
     }
 }

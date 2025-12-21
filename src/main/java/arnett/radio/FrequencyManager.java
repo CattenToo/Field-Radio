@@ -1,10 +1,14 @@
 package arnett.radio;
 
+import arnett.radio.Items.CustomItemManager;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -54,24 +58,25 @@ public class FrequencyManager {
 
                     Material item = mtx[i*3 + j].getType();
                     int digit = Character.getNumericValue(checked);
+                    String dyeName = item.name().substring(0, item.name().length()-4);
 
                     //dye
                     if(dyesChecker[digit] == null)
                     {
                         //has not yet been added
                         //so just add dye to frequency and to dyes checker
-                        frequency.append(item.name());
+                        frequency.append(dyeName);
                         frequency.append(Config.frequencySplitString);
-                        displayFrequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                        displayFrequency.append(Config.frequencyRepresentationDyes.getString(dyeName));
                         displayFrequency.append(Config.frequencySplitString);
-                        dyesChecker[digit] = Config.frequencyRepresentationDyes.getString(item.name());
+                        dyesChecker[digit] = Config.frequencyRepresentationDyes.getString(dyeName);
                     }
                     else {
                         //has been added so check if it is the same as the others for this level
-                        if(dyesChecker[digit].equals(Config.frequencyRepresentationDyes.getString(item.name())))
+                        if(dyesChecker[digit].equals(Config.frequencyRepresentationDyes.getString(dyeName)))
                         {
-                            frequency.append(item.name());
-                            displayFrequency.append(Config.frequencyRepresentationDyes.getString(item.name()));
+                            frequency.append(dyeName);
+                            displayFrequency.append(Config.frequencyRepresentationDyes.getString(dyeName));
                         }
                         else
                         {
@@ -85,7 +90,7 @@ public class FrequencyManager {
 
         //chop off last bit (the / or .)
         frequency.setLength(frequency.length() - 1);
-        displayFrequency.setLength(frequency.length() - 1);
+        displayFrequency.setLength(displayFrequency.length() - 1);
 
         result.editPersistentDataContainer(pdc -> {
             pdc.set(FrequencyManager.radioFrequencyKey, PersistentDataType.STRING, frequency.toString());
@@ -94,5 +99,79 @@ public class FrequencyManager {
         result.lore(List.of(Component.text(displayFrequency.toString())));
 
         return result;
+    }
+
+    public static TextComponent getColoredFrequencyTag(String frequency)
+    {
+        //only used when displaying frequencies, not for logic
+        frequency = convertToDisplayFrequency(frequency);
+
+        //get main frequency now since it's used multiple times
+        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
+
+        TextComponent c = Component.text("<").color(mainFqTextColor);
+
+        String[] split = frequency.split(Config.frequencySplitString);
+        for(int i = 0; i < split.length; i++)
+        {
+            Radio.logger.info(split[i]);
+            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+                    .color(CustomItemManager.getFrequencyTextColor(split[i]))
+            );
+
+        }
+
+        c = c.append(Component.text( "> ")).color(mainFqTextColor);
+
+        return c;
+    }
+
+    public static TextComponent getColoredFrequencyMessage(String frequency, Player sender, Component message)
+    {
+        //only used when displaying frequencies, not for logic
+        frequency = convertToDisplayFrequency(frequency);
+
+        //not reusing code because compute optimization
+        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
+
+        TextComponent c = Component.text("<").color(mainFqTextColor);
+
+        String[] split = frequency.split(Config.frequencySplitString);
+        for(int i = 0; i < split.length; i++)
+        {
+            Radio.logger.info(split[i]);
+            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+                    .color(CustomItemManager.getFrequencyTextColor(split[i]))
+            );
+
+        }
+
+        c = c.append(Component.text( "> ")).color(mainFqTextColor)
+                .append(Component.text(sender.getName()).color(TextColor.color(CustomItemManager.getDulledFrequencyColor(split[split.length-1]).asRGB())))
+                .append(Component.text(": ")
+                        .append(message).color(TextColor.color(CustomItemManager.getDulledFrequencyColor(mainFq).asRGB())));;
+
+        return c;
+    }
+
+    public static String convertToDisplayFrequency(String frequency)
+    {
+        StringBuilder displayFrequency = new StringBuilder();
+
+        for(String str : frequency.split(Config.frequencySplitString))
+        {
+            String disp = FrequencyManager.dyeMap.get(str);
+
+            if(disp == null)
+                displayFrequency.append(str).append(Config.frequencySplitString);
+
+            displayFrequency.append(disp).append(Config.frequencySplitString);
+        }
+
+        displayFrequency.setLength(displayFrequency.length() - 1);
+
+        return displayFrequency.toString();
     }
 }

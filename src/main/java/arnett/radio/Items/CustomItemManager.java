@@ -1,6 +1,7 @@
 package arnett.radio.Items;
 
 import arnett.radio.Config;
+import arnett.radio.Items.Speaker.SpeakerListener;
 import arnett.radio.Radio;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Items.Radio.FieldRadio;
@@ -28,6 +29,9 @@ public class CustomItemManager {
     {
         //radio
         plugin.getServer().getPluginManager().registerEvents(new FieldRadioVoiceChatListener(), plugin);
+
+        //speaker
+        plugin.getServer().getPluginManager().registerEvents(new SpeakerListener(), plugin);
     }
 
     public static void registerRecipies()
@@ -65,13 +69,13 @@ public class CustomItemManager {
         return TextColor.color(getFrequencyColor(subFrequency).asRGB());
     }
 
+    //runs using display frequencies
     public static Color getFrequencyColor(String subFrequency)
     {
         String dye = FrequencyManager.dyeMap.inverse().get(subFrequency);
 
         try
         {
-
             if(Config.frequencyRepresentationDyes.getString(dye).equals(subFrequency))
             {
                 return DyeColor.valueOf(dye).getColor();

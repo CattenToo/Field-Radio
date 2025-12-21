@@ -5,6 +5,7 @@ import arnett.radio.Radio;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 
 public class SetConfigValueCommand implements SubCommand {
     @Override
@@ -40,8 +41,38 @@ public class SetConfigValueCommand implements SubCommand {
 
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args, int level) {
-        if(args.length != level)
-            return List.of();
-        return Radio.singleton.getConfig().getKeys(true).stream().toList();
+        if(args.length == level)
+            return Radio.singleton.getConfig().getKeys(false).stream().toList();
+        else if(args.length == level + 1)
+            try {
+                int index;
+                //this part is pretty expense, but it's rarely intended to run so it's fine
+                for(index = 0; index < args.length; index++)
+                {
+                    if(args[index].equals("set"))
+                    {
+                        index++;
+                        break;
+                    }
+                }
+
+                StringBuilder curr = new StringBuilder();
+
+                for(int i = index; i < args.length; i++)
+                {
+                    curr.append(args[i]).append(".");
+                }
+
+                return Radio.singleton.getConfig().getConfigurationSection(curr.toString()).getKeys(false).stream().toList();
+            }
+            catch (Exception ignored){}
+            // no further keys
+        else if (args.length > level + 1)
+        {
+            //next argument present
+            return getSubcommandArguments(player, args, level);
+        }
+
+        return List.of();
     }
 }

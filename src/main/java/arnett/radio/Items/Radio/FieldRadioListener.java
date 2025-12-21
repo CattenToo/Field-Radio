@@ -60,34 +60,12 @@ public class FieldRadioListener implements Listener {
 
         String frequency = FieldRadio.getFrequency(sendingRadio.get());
 
-        //get main frequency now since it's used multiple times
-        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
-        TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
 
         Radio.logger.info("Message Sent on Frequency <" + frequency + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
 
         //build a new message
-        e.renderer((source, sourceDisplayName, message, viewer) -> {
-
-            TextComponent c = Component.text("<").color(mainFqTextColor);
-
-            String[] split = frequency.split(Config.frequencySplitString);
-            for(int i = 0; i < split.length; i++)
-            {
-                Radio.logger.info(split[i]);
-                c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
-                        .color(CustomItemManager.getFrequencyTextColor(split[i]))
-                    );
-
-            }
-
-            c = c.append(Component.text( "> ")).color(mainFqTextColor)
-            .append(sourceDisplayName.color(TextColor.color(CustomItemManager.getDulledFrequencyColor(split[split.length-1]).asRGB())))
-            .append(Component.text(": ")
-            .append(message).color(TextColor.color(CustomItemManager.getDulledFrequencyColor(mainFq).asRGB())));
-
-            return c;
-        });
+        e.renderer((source, sourceDisplayName, message, viewer) ->
+            FrequencyManager.getColoredFrequencyMessage(frequency, source, message));
 
     }
 

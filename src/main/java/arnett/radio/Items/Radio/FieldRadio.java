@@ -126,7 +126,7 @@ public class FieldRadio {
             pdc.set(FrequencyManager.radioFrequencyKey, PersistentDataType.STRING, frequency);
         });
 
-        radio.lore(List.of(Component.text(frequency)));
+        radio.lore(List.of(Component.text(FrequencyManager.convertToDisplayFrequency(frequency))));
 
         return radio;
     }
