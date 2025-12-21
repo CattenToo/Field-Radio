@@ -48,6 +48,13 @@ fieldradio:
         A: "AMETHYST_SHARD"
 
 speaker:
-  # if changing the head type you MUST update the speaker in the resource pack as well
-  # to override that head, Don't forget about that part
-  head-type: "PIGLIN_HEAD"
+  use-entity: false
+
+  #used if use-entity is set to false
+  block:
+    # if changing the head type you MUST update which texture is overridden in the resource pack as well
+    # to override that head, Don't forget about that part
+    head-type: "PIGLIN_HEAD"
+
+    #used if use-entity is set to true
+  entity:

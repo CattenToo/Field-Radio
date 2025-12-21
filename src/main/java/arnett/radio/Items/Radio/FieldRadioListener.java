@@ -1,0 +1,129 @@
+package arnett.radio.Items.Radio;
+
+import arnett.radio.Config;
+import arnett.radio.FrequencyManager;
+import arnett.radio.Radio;
+import arnett.radio.Items.CustomItemManager;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Material;
+import org.bukkit.block.Crafter;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.CrafterCraftEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.List;
+import java.util.Optional;
+
+public class FieldRadioListener implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMessageSent(AsyncChatEvent e)
+    {
+        //todo config for disabling global chat
+
+        Optional<ItemStack> sendingRadio = FieldRadio.getHeldRadio(e.getPlayer());
+
+        //check for radio being held, if not, continue normally
+        if(sendingRadio.isEmpty())
+            return;
+
+        //clears those without a radio (and non players)
+        e.viewers().removeIf(audience -> {
+            //only check for players
+            if(!(audience instanceof Player player))
+                //not a player
+                return true;
+
+            //check if they have radio
+            ItemStack[] inventoryRadios = FieldRadio.getRadiosFromPlayer(player);
+
+            for (ItemStack receivingRadio : inventoryRadios)
+            {
+                //frequency check
+                if(FieldRadio.matchingFrequencies(sendingRadio.get(), receivingRadio))
+                    return false;
+            }
+
+            //no match found
+            return true;
+
+        });
+
+        String frequency = FieldRadio.getFrequency(sendingRadio.get());
+
+        //get main frequency now since it's used multiple times
+        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
+
+        Radio.logger.info("Message Sent on Frequency <" + frequency + "> by " + e.getPlayer().getName() + ": " + PlainTextComponentSerializer.plainText().serialize(e.message()));
+
+        //build a new message
+        e.renderer((source, sourceDisplayName, message, viewer) -> {
+
+            TextComponent c = Component.text("<").color(mainFqTextColor);
+
+            String[] split = frequency.split(Config.frequencySplitString);
+            for(int i = 0; i < split.length; i++)
+            {
+                Radio.logger.info(split[i]);
+                c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+                        .color(CustomItemManager.getFrequencyTextColor(split[i]))
+                    );
+
+            }
+
+            c = c.append(Component.text( "> ")).color(mainFqTextColor)
+            .append(sourceDisplayName.color(TextColor.color(CustomItemManager.getDulledFrequencyColor(split[split.length-1]).asRGB())))
+            .append(Component.text(": ")
+            .append(message).color(TextColor.color(CustomItemManager.getDulledFrequencyColor(mainFq).asRGB())));
+
+            return c;
+        });
+
+    }
+
+    @EventHandler
+    public void onRadioCraftered(CrafterCraftEvent e)
+    {
+        if (!FieldRadio.isRadio(e.getRecipe().getResult()))
+            //not radio recipe so skip
+            return;
+
+        ItemStack result = e.getResult();
+
+        //returns what is put in the crafting interface
+        ItemStack[] mtx = ((Crafter)e.getBlock().getState()).getInventory().getContents();
+
+        //update result (tbh not sure if this is necessary)
+        e.setResult(FrequencyManager.addFrequencyToCraft(result, mtx, Config.fieldRadio_recipe_basic_shape));
+    }
+
+    @EventHandler
+    public void onRadioPrepared(PrepareItemCraftEvent e)
+    {
+        if(e.getRecipe() == null)
+            //invalid recipe so skip
+            return;
+
+        if (!FieldRadio.isRadio(e.getRecipe().getResult()))
+            //not radio recipe so skip
+            return;
+
+        ItemStack result = e.getInventory().getResult();
+
+        //returns what is put in the crafting interface
+        ItemStack[] mtx = e.getInventory().getMatrix();
+
+        //update result (tbh not sure if this is necessary)
+        e.getInventory().setResult(FrequencyManager.addFrequencyToCraft(result, mtx, Config.fieldRadio_recipe_basic_shape));
+    }
+}
