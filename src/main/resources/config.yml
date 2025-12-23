@@ -30,7 +30,11 @@ fieldradio:
     noise-floor: 75  # Constant hiss volume
     crackle-chance: 3000 # 1 in 3000 chance per sample
 
+  # this is so that the radio doesn't cut out at the end
+  # 200000000 is default at what I believe is .2s
+  # this is milliseconds and is NOT based off ticks
   grace-period: 200000000
+
   recipe:
     basic:
       enabled: true

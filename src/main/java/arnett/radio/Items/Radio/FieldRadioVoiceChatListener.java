@@ -1,13 +1,23 @@
 package arnett.radio.Items.Radio;
 
 import arnett.radio.Radio;
+import arnett.radio.RadioConfig;
+import arnett.radio.RadioVoiceChat;
+import de.maxhenkel.voicechat.api.VoicechatConnection;
+import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class FieldRadioVoiceChatListener implements Listener {
 
@@ -69,4 +79,82 @@ public class FieldRadioVoiceChatListener implements Listener {
         // all their existing entries if any (which would be the case if there is a serer stop)
         FieldRadioVoiceChat.removeFromFrequency(e.getPlayer().getUniqueId());
     }
+
+    //voice chat events are static with this plugin because reworking that at this point would be a nightmare
+    public static void onMicrophone(MicrophonePacketEvent e)
+    {
+        // The connection might be null if the event is caused by other means
+        if (e.getSenderConnection() == null)
+            return;
+
+        // Cast the generic player object of the voice chat API to an actual bukkit player
+        // This object should always be a bukkit player object on bukkit based servers
+        if (!(e.getSenderConnection().getPlayer().getPlayer() instanceof Player player))
+            return;
+
+        //make sure player is actively holding a radio
+        if(!FieldRadio.isHoldingRadio(player))
+            return;
+
+        //grace period so voice doesn't cut off at end
+        if(!player.hasActiveItem() && !FieldRadioVoiceChat.playersInGracePeroid.containsKey(player.getUniqueId()))
+        {
+            return;
+        }
+        else if (player.hasActiveItem())
+        {
+            //update Grace period
+            FieldRadioVoiceChat.playersInGracePeroid.put(player.getUniqueId(), System.nanoTime() + RadioConfig.fieldRadio_gracePeriod);
+        }
+        else
+        {
+            //they aren't using the radio and are on grace
+            if(FieldRadioVoiceChat.playersInGracePeroid.get(player.getUniqueId()) < System.nanoTime())
+            {
+                //remove player from grace and stop packet
+                FieldRadioVoiceChat.removeFromGrace(player.getUniqueId());
+                return;
+            }
+        }
+
+        //send packets to others listening to frequency
+        String frequency = FieldRadio.getFrequency(FieldRadio.getHeldRadio(player).get());
+
+        //gets voice chat api for connections
+        VoicechatServerApi serverVC = e.getVoicechat();
+
+        // worst case scenario is someone is filling up a frequency with like 41 radios
+        Set<UUID> processed = new HashSet<>((int)Math.sqrt(FieldRadioVoiceChat.frequencyListeners.get(frequency).size()));
+
+        //so player doesn't hear themselves
+        processed.add(player.getUniqueId());
+
+        for(UUID id : FieldRadioVoiceChat.frequencyListeners.get(frequency))
+        {
+            //skip if already added to set (they've already been sent the packet)
+            if(!processed.add(id))
+            {
+                continue;
+            }
+
+            //grab connection
+            VoicechatConnection connection = serverVC.getConnectionOf(id);
+
+            //make sure connection is there
+            if(connection == null || !connection.isConnected())
+                continue;
+
+            byte[] audioData = e.getPacket().getOpusEncodedData();
+
+            if(RadioConfig.fieldRadio_audioFilter_enabled)
+            {
+                //modify packet
+                audioData = RadioVoiceChat.encoder.encode(FieldRadioVoiceChat.applyFilter(RadioVoiceChat.decoder.decode(audioData)));
+            }
+
+            //send audio
+            serverVC.sendStaticSoundPacketTo(connection, e.getPacket().staticSoundPacketBuilder().opusEncodedData(audioData).build());
+        }
+    }
+
 }

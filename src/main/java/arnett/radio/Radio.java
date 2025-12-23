@@ -33,7 +33,7 @@ public final class Radio extends JavaPlugin {
 
         FrequencyManager.reload();
 
-        if(!Config.enabled)
+        if(!RadioConfig.enabled)
         {
             return;
         }
@@ -64,20 +64,18 @@ public final class Radio extends JavaPlugin {
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
 
         getLogger().info("status: " + (service != null));
-        if(service != null)
-        {
-            //we have voice chat
-            service.registerPlugin(new RadioVoiceChat());
-            getLogger().info("Using Simple Voice Chat");
-        }
-        else
+        if(service == null)
         {
             getLogger().info("Running Without Simple Voice Chat");
             return;
         }
 
+
         //simple voice is present from here down
 
+        service.registerPlugin(new RadioVoiceChat());
+
+        getLogger().info("Using Simple Voice Chat");
         //register events specific to voice chat
         CustomItemManager.registerVoiceChatItemEvents(this);
     }
@@ -88,7 +86,7 @@ public final class Radio extends JavaPlugin {
         super.reloadConfig();
 
         config = getConfig();
-        Config.refresh();
+        RadioConfig.refresh();
 
         if(logger != null)
             FrequencyManager.reload();

@@ -1,21 +1,33 @@
 package arnett.radio.Items.Speaker;
 
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Radio;
+import arnett.radio.RadioVoiceChat;
+import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 @SuppressWarnings("UnstableApiUsage")
 public class Speaker {
     //todo use Heads to monitor the block placement
 
+    //used both to identify speaker items and chunks that have speakers
     public static final NamespacedKey speakerIdentifierKey = new NamespacedKey(Radio.singleton, "speaker");
     public static final NamespacedKey speakerModelKey = new NamespacedKey("radio", "speaker");
+
+    // this is used to track active locational channels if using blocks since it's easier on the server
+    // or active entity channels if not since they need to be entities anyway
+    // active meaning that they are not in an unloaded chunk
+    public static ArrayList<AudioChannel> activeSpeakers = new ArrayList<>();
 
     public static ItemStack getSpeaker(String frequency)
     {
@@ -31,7 +43,7 @@ public class Speaker {
 
     public static ItemStack getSpeaker()
     {
-        if(Config.speaker_useEntity)
+        if(RadioConfig.speaker_useEntity)
             return getSpeakerEntityItem();
         else
             return getspeakerBlockItem();
@@ -42,11 +54,11 @@ public class Speaker {
         ItemStack speaker;
 
         try {
-            speaker = new ItemStack(Config.speaker_block_headType);
+            speaker = new ItemStack(RadioConfig.speaker_block_headType);
         }
         catch (Exception e)
         {
-            Radio.logger.info("INVALID CONFIG TYPE FOR SPEAKER HEAD: " + Config.speaker_block_headType);
+            Radio.logger.info("INVALID CONFIG TYPE FOR SPEAKER HEAD: " + RadioConfig.speaker_block_headType);
             return ItemStack.of(Material.AIR);
         }
 
@@ -69,5 +81,10 @@ public class Speaker {
         //todo entity version of the speaker
 
         return speaker;
+    }
+
+    public static void addActiveSpeaker(Location location)
+    {
+        activeSpeakers.add(RadioVoiceChat.api.createLocationalAudioChannel(UUID.randomUUID(), ));
     }
 }

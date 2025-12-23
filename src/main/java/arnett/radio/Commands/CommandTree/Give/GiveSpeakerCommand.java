@@ -1,7 +1,7 @@
 package arnett.radio.Commands.CommandTree.Give;
 
 import arnett.radio.Commands.SubCommand;
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Items.Speaker.Speaker;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class GiveSpeakerCommand implements SubCommand {
 
         for(int i = level; i < args.length; i++)
         {
-            frequency.append(args[i]).append(Config.frequencySplitString);
+            frequency.append(args[i]).append(RadioConfig.frequencySplitString);
         }
 
         frequency.setLength(frequency.length() - 1);

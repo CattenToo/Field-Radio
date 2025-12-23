@@ -1,12 +1,13 @@
 package arnett.radio.Items;
 
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.Items.Speaker.SpeakerListener;
 import arnett.radio.Radio;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Items.Radio.FieldRadio;
 import arnett.radio.Items.Radio.FieldRadioListener;
 import arnett.radio.Items.Radio.FieldRadioVoiceChatListener;
+import arnett.radio.RadioVoiceChat;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -37,7 +38,7 @@ public class CustomItemManager {
     public static void registerRecipies()
     {
         //radio
-        if(Config.fieldRadio_recipe_basic_enabled)
+        if(RadioConfig.fieldRadio_recipe_basic_enabled)
             for(Recipe r : FieldRadio.getRecipes())
                 Bukkit.addRecipe(r);
     }
@@ -76,7 +77,7 @@ public class CustomItemManager {
 
         try
         {
-            if(Config.frequencyRepresentationDyes.getString(dye).equals(subFrequency))
+            if(RadioConfig.frequencyRepresentationDyes.getString(dye).equals(subFrequency))
             {
                 return DyeColor.valueOf(dye).getColor();
             }

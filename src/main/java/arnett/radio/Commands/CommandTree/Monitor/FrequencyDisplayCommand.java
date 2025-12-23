@@ -1,18 +1,13 @@
 package arnett.radio.Commands.CommandTree.Monitor;
 
 import arnett.radio.Commands.SubCommand;
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.FrequencyManager;
-import arnett.radio.Items.Radio.FieldRadio;
 import arnett.radio.Items.Radio.FieldRadioVoiceChat;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import org.slf4j.event.KeyValuePair;
 
 import java.util.*;
 
@@ -48,7 +43,7 @@ public class FrequencyDisplayCommand implements SubCommand {
         StringBuilder argFrequency = new StringBuilder();
 
         for(String s : args)
-            argFrequency.append(s).append(Config.frequencySplitString);
+            argFrequency.append(s).append(RadioConfig.frequencySplitString);
 
         StringBuilder playerList = new StringBuilder();
         map.forEach((frequency, players) -> {

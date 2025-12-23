@@ -1,6 +1,6 @@
 package arnett.radio.Items.Radio;
 
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Radio;
 import com.destroystokyo.paper.MaterialTags;
@@ -37,12 +37,12 @@ public class FieldRadio {
             ShapedRecipe recipe = new ShapedRecipe(radioIdentifierKey, getRadio());
 
             //get shape of recipe from config
-            recipe.shape(Config.fieldRadio_recipe_basic_shape.toArray(String[]::new));
+            recipe.shape(RadioConfig.fieldRadio_recipe_basic_shape.toArray(String[]::new));
 
             //allows for all dye types to be used in a slot
             RecipeChoice.MaterialChoice dyes = new RecipeChoice.MaterialChoice(MaterialTags.DYES);
 
-            ConfigurationSection ingredients = Config.fieldRadio_recipe_basic_ingredients;
+            ConfigurationSection ingredients = RadioConfig.fieldRadio_recipe_basic_ingredients;
 
             //defines the ingredients (the letters in the shape)
             if (ingredients != null) {

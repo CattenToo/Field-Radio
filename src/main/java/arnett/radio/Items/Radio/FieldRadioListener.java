@@ -1,15 +1,10 @@
 package arnett.radio.Items.Radio;
 
-import arnett.radio.Config;
+import arnett.radio.RadioConfig;
 import arnett.radio.FrequencyManager;
 import arnett.radio.Radio;
-import arnett.radio.Items.CustomItemManager;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Material;
 import org.bukkit.block.Crafter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,9 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.List;
 import java.util.Optional;
 
 public class FieldRadioListener implements Listener {
@@ -82,7 +75,7 @@ public class FieldRadioListener implements Listener {
         ItemStack[] mtx = ((Crafter)e.getBlock().getState()).getInventory().getContents();
 
         //update result (tbh not sure if this is necessary)
-        e.setResult(FrequencyManager.addFrequencyToCraft(result, mtx, Config.fieldRadio_recipe_basic_shape));
+        e.setResult(FrequencyManager.addFrequencyToCraft(result, mtx, RadioConfig.fieldRadio_recipe_basic_shape));
     }
 
     @EventHandler
@@ -102,6 +95,6 @@ public class FieldRadioListener implements Listener {
         ItemStack[] mtx = e.getInventory().getMatrix();
 
         //update result (tbh not sure if this is necessary)
-        e.getInventory().setResult(FrequencyManager.addFrequencyToCraft(result, mtx, Config.fieldRadio_recipe_basic_shape));
+        e.getInventory().setResult(FrequencyManager.addFrequencyToCraft(result, mtx, RadioConfig.fieldRadio_recipe_basic_shape));
     }
 }

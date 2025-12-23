@@ -7,7 +7,7 @@ import java.util.List;
 
 //yeah, this system is much better
 //basically, all this does is allow for ease of use when coding
-public class Config {
+public class RadioConfig {
 
     // Top level
     public static boolean enabled;

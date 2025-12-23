@@ -1,5 +1,6 @@
 package arnett.radio.Items.Radio;
 
+import arnett.radio.RadioConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -135,4 +136,52 @@ public class FieldRadioVoiceChat {
                 addToFrequency(FieldRadio.getFrequency(radio), target.getUniqueId());
     }
 
+    public static short[] applyFilter(short[] decodedData)
+    {
+        // Filter states to maintain continuity across packets
+        double lowPassState = 0;
+        double highPassState = 0;
+        double lastRawSample = 0;
+        Random random = new Random();
+
+        // Configuration constants
+        double LP_ALPHA = RadioConfig.fieldRadio_audioFilter_LPAlpha; // Lower = more muffled
+        double HP_ALPHA = RadioConfig.fieldRadio_audioFilter_HPAlpha; // Higher = less bass
+        int NOISE_FLOOR = RadioConfig.fieldRadio_audioFilter_noiseFloor;  // Constant hiss volume
+        int CRACKLE_CHANCE = RadioConfig.fieldRadio_audioFilter_crackleChance; // 1 in 2000 samples
+
+        // no, I did not actually code the audio manipulation part of the filter since I'm not the best at working with audio
+
+        for (int i = 0; i < decodedData.length; i++) {
+            double currentSample = decodedData   [i];
+
+            // 1. BANDPASS FILTER (EQ)
+            // Low Pass (Cuts highs)
+            lowPassState = LP_ALPHA * currentSample + (1 - LP_ALPHA) * lowPassState;
+            double filtered = lowPassState;
+
+            // High Pass (Cuts lows)
+            highPassState = HP_ALPHA * highPassState + HP_ALPHA * (filtered - lastRawSample);
+            lastRawSample = filtered;
+
+            // 2. SATURATION (The "Crunch")
+            // Convert to -1.0 to 1.0 range for math
+            double x = highPassState / 32768.0;
+            // Soft clipping formula: (3x - x^3) / 2
+            double saturated = (3 * x - Math.pow(x, 3)) / 2.0;
+
+            // 3. NOISE & INTERFERENCE
+            // Constant low-level hiss
+            int hiss = random.nextInt(NOISE_FLOOR * 2 + 1) - NOISE_FLOOR;
+
+            // Random electrical "crackles"
+            int crackle = (random.nextInt(CRACKLE_CHANCE) == 0) ? (random.nextInt(6000) - 3000) : 0;
+
+            // 4. CLAMP & OUTPUT
+            int finalSample = (int) (saturated * 32767) + hiss + crackle;
+            decodedData[i] = (short) Math.max(-32768, Math.min(32767, finalSample));
+        }
+
+        return decodedData;
+    }
 }

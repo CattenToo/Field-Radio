@@ -29,10 +29,10 @@ public class FrequencyManager {
         dyeMap.clear();
 
         //sets up 2 way map for quick frequency color refrence
-        for (String key : Config.frequencyRepresentationDyes.getKeys(false)) {
+        for (String key : RadioConfig.frequencyRepresentationDyes.getKeys(false)) {
             Radio.logger.info(key);
-            Radio.logger.info(Config.frequencyRepresentationDyes.getString(key));
-            dyeMap.put(key, Config.frequencyRepresentationDyes.getString(key));
+            Radio.logger.info(RadioConfig.frequencyRepresentationDyes.getString(key));
+            dyeMap.put(key, RadioConfig.frequencyRepresentationDyes.getString(key));
         }
     }
 
@@ -66,17 +66,17 @@ public class FrequencyManager {
                         //has not yet been added
                         //so just add dye to frequency and to dyes checker
                         frequency.append(dyeName);
-                        frequency.append(Config.frequencySplitString);
-                        displayFrequency.append(Config.frequencyRepresentationDyes.getString(dyeName));
-                        displayFrequency.append(Config.frequencySplitString);
-                        dyesChecker[digit] = Config.frequencyRepresentationDyes.getString(dyeName);
+                        frequency.append(RadioConfig.frequencySplitString);
+                        displayFrequency.append(RadioConfig.frequencyRepresentationDyes.getString(dyeName));
+                        displayFrequency.append(RadioConfig.frequencySplitString);
+                        dyesChecker[digit] = RadioConfig.frequencyRepresentationDyes.getString(dyeName);
                     }
                     else {
                         //has been added so check if it is the same as the others for this level
-                        if(dyesChecker[digit].equals(Config.frequencyRepresentationDyes.getString(dyeName)))
+                        if(dyesChecker[digit].equals(RadioConfig.frequencyRepresentationDyes.getString(dyeName)))
                         {
                             frequency.append(dyeName);
-                            displayFrequency.append(Config.frequencyRepresentationDyes.getString(dyeName));
+                            displayFrequency.append(RadioConfig.frequencyRepresentationDyes.getString(dyeName));
                         }
                         else
                         {
@@ -107,16 +107,16 @@ public class FrequencyManager {
         frequency = convertToDisplayFrequency(frequency);
 
         //get main frequency now since it's used multiple times
-        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        String mainFq = frequency.substring(0, frequency.indexOf(RadioConfig.frequencySplitString));
         TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
 
         TextComponent c = Component.text("<").color(mainFqTextColor);
 
-        String[] split = frequency.split(Config.frequencySplitString);
+        String[] split = frequency.split(RadioConfig.frequencySplitString);
         for(int i = 0; i < split.length; i++)
         {
             Radio.logger.info(split[i]);
-            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : RadioConfig.frequencySplitString))
                     .color(CustomItemManager.getFrequencyTextColor(split[i]))
             );
 
@@ -133,16 +133,16 @@ public class FrequencyManager {
         frequency = convertToDisplayFrequency(frequency);
 
         //not reusing code because compute optimization
-        String mainFq = frequency.substring(0, frequency.indexOf(Config.frequencySplitString));
+        String mainFq = frequency.substring(0, frequency.indexOf(RadioConfig.frequencySplitString));
         TextColor mainFqTextColor = CustomItemManager.getFrequencyTextColor(mainFq);
 
         TextComponent c = Component.text("<").color(mainFqTextColor);
 
-        String[] split = frequency.split(Config.frequencySplitString);
+        String[] split = frequency.split(RadioConfig.frequencySplitString);
         for(int i = 0; i < split.length; i++)
         {
             Radio.logger.info(split[i]);
-            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : Config.frequencySplitString))
+            c = c.append(Component.text(split[i] + (i == split.length - 1 ? "" : RadioConfig.frequencySplitString))
                     .color(CustomItemManager.getFrequencyTextColor(split[i]))
             );
 
@@ -160,18 +160,23 @@ public class FrequencyManager {
     {
         StringBuilder displayFrequency = new StringBuilder();
 
-        for(String str : frequency.split(Config.frequencySplitString))
+        for(String str : frequency.split(RadioConfig.frequencySplitString))
         {
             String disp = FrequencyManager.dyeMap.get(str);
 
             if(disp == null)
-                displayFrequency.append(str).append(Config.frequencySplitString);
+                displayFrequency.append(str).append(RadioConfig.frequencySplitString);
 
-            displayFrequency.append(disp).append(Config.frequencySplitString);
+            displayFrequency.append(disp).append(RadioConfig.frequencySplitString);
         }
 
         displayFrequency.setLength(displayFrequency.length() - 1);
 
         return displayFrequency.toString();
+    }
+
+    public static void sendPacketToFrequency()
+    {
+
     }
 }

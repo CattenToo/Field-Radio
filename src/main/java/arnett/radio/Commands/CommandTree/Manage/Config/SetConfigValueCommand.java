@@ -28,9 +28,29 @@ public class SetConfigValueCommand implements SubCommand {
 
         SubCommand.super.execute(player, args, level);
 
-        Object previous = Radio.singleton.getConfig().get(args[level]);
-        Radio.singleton.getConfig().set(args[level], args[level+1]);
-        player.sendMessage(args[level] + " set from " + previous + " to " + args[level+1]);
+        int index;
+        //this part is pretty expense, but it's rarely intended to run so it's fine
+        for(index = 0; index < args.length; index++)
+        {
+            if(args[index].equals("set"))
+            {
+                index++;
+                break;
+            }
+        }
+
+        StringBuilder curr = new StringBuilder();
+
+        for(int i = index; i < args.length; i++)
+        {
+            curr.append(args[i]).append(".");
+        }
+
+        curr.setLength(curr.length() - 1);
+
+        Object previous = Radio.singleton.getConfig().get(curr.toString());
+        Radio.singleton.getConfig().set(curr.toString(), args[level+1]);
+        player.sendMessage(curr.toString() + " set from " + previous + " to " + args[args.length - 1]);
         return true;
     }
 
@@ -62,6 +82,8 @@ public class SetConfigValueCommand implements SubCommand {
                 {
                     curr.append(args[i]).append(".");
                 }
+
+                curr.setLength(curr.length() - 1);
 
                 return Radio.singleton.getConfig().getConfigurationSection(curr.toString()).getKeys(false).stream().toList();
             }
