@@ -33,11 +33,17 @@ public class RadioConfig {
 
     //speaker
     public static boolean speaker_useEntity;
+    public static int speaker_maxSpeakerCacheSize;
+
+        // Recipe
+        public static boolean speaker_recipe_basic_enabled;
+        public static List<String> speaker_recipe_basic_shape;
+        public static ConfigurationSection speaker_recipe_basic_ingredients;
 
         // block
         public static Material speaker_block_headType;
 
-        // entity
+    // entity
 
 
 
@@ -62,18 +68,27 @@ public class RadioConfig {
 
              // Radio Recipe
              fieldRadio_recipe_basic_enabled = Radio.config.getBoolean("fieldradio.recipe.basic.enabled");
-             fieldRadio_recipe_basic_shape = Radio.config.getStringList("fieldradio.recipe.basic.shape");
-             fieldRadio_recipe_basic_ingredients = Radio.config.getConfigurationSection("fieldradio.recipe.basic.ingredients");
 
-         //speaker
+        fieldRadio_recipe_basic_shape = Radio.config.getStringList("fieldradio.recipe.basic.shape");
+        fieldRadio_recipe_basic_ingredients = Radio.config.getConfigurationSection("fieldradio.recipe.basic.ingredients");
+
+        //speaker
         speaker_useEntity = Radio.config.getBoolean("speaker.use-entity");
+        speaker_maxSpeakerCacheSize = Radio.config.getInt("speaker.max-speaker-cache-size");
+
+            // Recipe
+            speaker_recipe_basic_enabled = Radio.config.getBoolean("speaker.recipe.basic.enabled");
+            speaker_recipe_basic_shape = Radio.config.getStringList("speaker.recipe.basic.shape");
+            speaker_recipe_basic_ingredients = Radio.config.getConfigurationSection("speaker.recipe.basic.ingredients");
 
             //block
             speaker_block_headType = Material.matchMaterial(Radio.config.getString("speaker.block.head-type"));
 
             //entity
 
-        //specail cases that need reloading
+
+
+        //special cases that need reloading
 
     }
 }

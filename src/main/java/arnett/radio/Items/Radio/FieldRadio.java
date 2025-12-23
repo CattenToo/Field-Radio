@@ -23,6 +23,7 @@ public class FieldRadio {
 
     // shouldn't ever check the value of the key, only that the radio has it
     public static final NamespacedKey radioIdentifierKey = new NamespacedKey(Radio.singleton, "field_radio");
+
     //namspace key in resource pack for custom model
     public static final NamespacedKey radioModelKey = new NamespacedKey("radio", "field_radio");
 
@@ -33,56 +34,9 @@ public class FieldRadio {
         ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 
         // Plain Radio
-        {
-            ShapedRecipe recipe = new ShapedRecipe(radioIdentifierKey, getRadio());
-
-            //get shape of recipe from config
-            recipe.shape(RadioConfig.fieldRadio_recipe_basic_shape.toArray(String[]::new));
-
-            //allows for all dye types to be used in a slot
-            RecipeChoice.MaterialChoice dyes = new RecipeChoice.MaterialChoice(MaterialTags.DYES);
-
-            ConfigurationSection ingredients = RadioConfig.fieldRadio_recipe_basic_ingredients;
-
-            //defines the ingredients (the letters in the shape)
-            if (ingredients != null) {
-                for (String key : ingredients.getKeys(false)) {
-
-                    //just a basic material
-                    Material mat;
-                    try{
-                        mat = Material.matchMaterial(ingredients.getString(key));
-                    }
-                    catch (Exception e)
-                    {
-                        //material not found or something went wrong
-                        Radio.logger.info("Incorrectly registered Material For Radio basic recipe");
-                        mat = Material.AIR;
-                    }
-                    if (mat != null) {
-                        recipe.setIngredient(key.charAt(0), mat);
-                    }
-                }
-            }
-
-            //add dyes
-            for(int i = 0; i < 8; i++)
-            {
-                try
-                {
-                    recipe.setIngredient((char)( i + '0'), dyes);
-                    Radio.logger.info("Added Dye for " + i);
-                }
-                catch (Exception e)
-                {
-                    Radio.logger.info("stopped at " + i);
-                    //frequency not in recipe so exit
-                    break;
-                }
-            }
-
-            recipes.add(recipe);
-        }
+        if(RadioConfig.fieldRadio_recipe_basic_enabled)
+            recipes.add(FrequencyManager.getFrequencyIndependentShapedRecipe(radioIdentifierKey, getRadio(),
+                RadioConfig.fieldRadio_recipe_basic_shape, RadioConfig.fieldRadio_recipe_basic_ingredients));
 
         return  recipes;
     }

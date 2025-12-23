@@ -1,5 +1,6 @@
 package arnett.radio.Items.Radio;
 
+import arnett.radio.Items.Speaker.Speaker;
 import arnett.radio.Radio;
 import arnett.radio.RadioConfig;
 import arnett.radio.RadioVoiceChat;
@@ -117,11 +118,16 @@ public class FieldRadioVoiceChatListener implements Listener {
             }
         }
 
-        //send packets to others listening to frequency
+
         String frequency = FieldRadio.getFrequency(FieldRadio.getHeldRadio(player).get());
 
         //gets voice chat api for connections
         VoicechatServerApi serverVC = e.getVoicechat();
+
+        //send to speakers
+        Speaker.sendMicrophonePacketToFrequency(e, frequency);
+
+        //sent to players with field radios
 
         // worst case scenario is someone is filling up a frequency with like 41 radios
         Set<UUID> processed = new HashSet<>((int)Math.sqrt(FieldRadioVoiceChat.frequencyListeners.get(frequency).size()));
@@ -155,6 +161,9 @@ public class FieldRadioVoiceChatListener implements Listener {
             //send audio
             serverVC.sendStaticSoundPacketTo(connection, e.getPacket().staticSoundPacketBuilder().opusEncodedData(audioData).build());
         }
+
+
     }
+
 
 }

@@ -3,6 +3,7 @@ package arnett.radio;
 import arnett.radio.Items.Radio.FieldRadio;
 import arnett.radio.Items.Radio.FieldRadioVoiceChat;
 import arnett.radio.Items.Radio.FieldRadioVoiceChatListener;
+import arnett.radio.Items.Speaker.SpeakerListener;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;

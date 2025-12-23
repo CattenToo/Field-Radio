@@ -40,19 +40,37 @@ fieldradio:
       enabled: true
 
       # Use 0 for main frequency and numbers 1 - 9 for subfrequencies,
-      # MUST have a main frequency and AT LEAST ONE subfrequency
+      # Recommended to have a main frequency and one subfrequency
       shape:
-        - "O01"
+        - "C01"
         - "IAI"
         - "IRI"
       ingredients:
-        O: "LIGHTNING_ROD"
+        C: "COPPER_INGOT"
         I: "IRON_INGOT"
         R: "REDSTONE"
         A: "AMETHYST_SHARD"
 
 speaker:
   use-entity: false
+  max-speaker-cache-size: 8
+
+  recipe:
+    basic:
+      enabled: true
+
+      # Use 0 for main frequency and numbers 1 - 9 for subfrequencies,
+      # Recommended to have only a main frequency
+      shape:
+        - "0A0"
+        - "IRI"
+        - "CJC"
+      ingredients:
+        C: "COPPER_INGOT"
+        I: "IRON_INGOT"
+        R: "REDSTONE"
+        A: "AMETHYST_SHARD"
+        J: "JUKEBOX"
 
   #used if use-entity is set to false
   block:

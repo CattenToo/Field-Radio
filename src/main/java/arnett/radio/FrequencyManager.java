@@ -1,6 +1,7 @@
 package arnett.radio;
 
 import arnett.radio.Items.CustomItemManager;
+import com.destroystokyo.paper.MaterialTags;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
@@ -8,11 +9,16 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.NavigableMap;
 
 public class FrequencyManager {
 
@@ -173,6 +179,56 @@ public class FrequencyManager {
         displayFrequency.setLength(displayFrequency.length() - 1);
 
         return displayFrequency.toString();
+    }
+
+    public static Recipe getFrequencyIndependentShapedRecipe(NamespacedKey idKey, ItemStack result, List<String> shape, ConfigurationSection ingredients)
+    {
+        ShapedRecipe recipe = new ShapedRecipe(idKey, result);
+
+        //get shape of recipe from config
+        recipe.shape(shape.toArray(String[]::new));
+
+        //allows for all dye types to be used in a slot
+        RecipeChoice.MaterialChoice dyes = new RecipeChoice.MaterialChoice(MaterialTags.DYES);
+
+        //defines the ingredients (the letters in the shape)
+        if (ingredients != null) {
+            for (String key : ingredients.getKeys(false)) {
+
+                //just a basic material
+                Material mat;
+                try{
+                    mat = Material.matchMaterial(ingredients.getString(key));
+                }
+                catch (Exception e)
+                {
+                    //material not found or something went wrong
+                    Radio.logger.info("Incorrectly registered Material For Radio basic recipe");
+                    mat = Material.AIR;
+                }
+                if (mat != null) {
+                    recipe.setIngredient(key.charAt(0), mat);
+                }
+            }
+        }
+
+        //add dyes
+        for(int i = 0; i < 8; i++)
+        {
+            try
+            {
+                recipe.setIngredient((char)( i + '0'), dyes);
+                Radio.logger.info("Added Dye for " + i);
+            }
+            catch (Exception e)
+            {
+                Radio.logger.info("stopped at " + i);
+                //frequency not in recipe so exit
+                break;
+            }
+        }
+
+        return recipe;
     }
 
     public static void sendPacketToFrequency()

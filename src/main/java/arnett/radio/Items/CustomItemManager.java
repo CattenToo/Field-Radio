@@ -1,5 +1,6 @@
 package arnett.radio.Items;
 
+import arnett.radio.Items.Speaker.Speaker;
 import arnett.radio.RadioConfig;
 import arnett.radio.Items.Speaker.SpeakerListener;
 import arnett.radio.Radio;
@@ -38,9 +39,12 @@ public class CustomItemManager {
     public static void registerRecipies()
     {
         //radio
-        if(RadioConfig.fieldRadio_recipe_basic_enabled)
-            for(Recipe r : FieldRadio.getRecipes())
-                Bukkit.addRecipe(r);
+        for(Recipe r : FieldRadio.getRecipes())
+            Bukkit.addRecipe(r);
+
+        //speaker
+        for(Recipe r : Speaker.getRecipes())
+            Bukkit.addRecipe(r);
     }
 
     //returns recipe without choice items
